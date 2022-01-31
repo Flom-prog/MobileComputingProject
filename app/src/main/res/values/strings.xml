@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">MobileComputingProject</string>
+
+
+    <string name="exit">Exit ?</string>
+    <string name="exit_msg">Are you sure you want to exit ?</string>
+
+    <string name="create_acc_wrng_msg_1">There already is an account on this device.</string>
+    <string name="create_acc_wrng_msg_2">Creating a new account will result in the loss of all previously saved data on this app.</string>
+    <string name="create_acc_missing_pass">The password is missing.</string>
+    <string name="create_acc_pass_mismatch">The passwords entered do not match.</string>
+    <string name="create_acc_missing_username">The username is missing.</string>
+    <string name="create_acc_too_long_username">The username is too long.</string>
+    <string name="wrng_continue">Do you want to continue?</string>
+
+    <string name="ok">OK</string>
+    <string name="warning">Warning !</string>
+    <string name="cancel">CANCEL</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="create_your_account">Create your account !</string>
+    <string name="autofill_username">Autofill username</string>
+    <string name="wrong_pass_error">Incorrect password.</string>
+    <string name="wrong_username_error">Incorrect username.</string>
+</resources>
