@@ -33,8 +33,9 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/bg_button_white"
+        android:theme="@style/Button.White"
         android:text="@string/sign_up"
-        android:textColor="#ffffff"
+        android:textColor="@color/purple_700"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_login_signin"
         app:layout_constraintHorizontal_bias="0.5"
@@ -51,14 +52,32 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/bg_button_white"
+        android:theme="@style/Button.Black"
         android:text="@string/sign_in"
-        android:textColor="#ffffff"
+        android:textColor="@color/purple_200"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btn_login_signup"
         app:layout_constraintTop_toBottomOf="@+id/TextIL_login_password"
         app:layout_constraintVertical_bias="0.0" />
+
+
+    <ImageButton
+        android:id="@+id/btn_login_biometric_signin"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:padding="10dp"
+        android:background="@drawable/bg_button_white"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_fingerprint_white_24"
+        android:textColor="#ffffff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_login_signin" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/TextIL_login_username"
@@ -69,6 +88,7 @@
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="20dp"
         android:theme="@style/myEditTextStyle"
+        android:textColorHint="@color/purple_500"
         app:counterEnabled="true"
         app:counterMaxLength="12"
         app:endIconMode="clear_text"
@@ -84,7 +104,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/username"
-            android:textColor="@color/colorPrimary" />
+            android:textColor="@color/purple_500"
+            android:inputType="text" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -122,6 +143,7 @@
         android:layout_marginTop="15dp"
         android:layout_marginEnd="10dp"
         android:theme="@style/myEditTextStyle"
+        android:textColorHint="@color/purple_500"
         app:endIconMode="password_toggle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -134,7 +156,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/password"
             android:inputType="textPassword"
-            android:textColor="@color/colorPrimary" />
+            android:textColor="@color/purple_500" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

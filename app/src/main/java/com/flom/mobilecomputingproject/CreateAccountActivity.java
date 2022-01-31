@@ -153,11 +153,11 @@ public class CreateAccountActivity extends AppCompatActivity {
     /**
      * Method used to open the Main Menu.
      *
-     * It sets a flag "FLAG_ACTIVITY_NO_HISTORY" so that the user cannot press the back button and go back to the Account Creation page.
+     * It sets a flag "FLAG_ACTIVITY_CLEAR_TOP" so that the user cannot press the back button and go back to the Account Creation page.
      */
     private void openLogInMenu() {
         Intent intent = new Intent(this, LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 
@@ -180,6 +180,21 @@ public class CreateAccountActivity extends AppCompatActivity {
             constraintLayout.setBackground(getDrawable(R.drawable.good_night_img));
             tvTimeMsg.setTextColor(getResources().getColor(R.color.white));
         }
+    }
+
+    /**
+     * Method uses to open an Alert Dialog when back button is pressed
+     */
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.exit))
+                .setMessage(getString(R.string.exit_msg))
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(android.R.string.yes, (arg0, arg1) -> {
+                    setResult(RESULT_OK, new Intent().putExtra("EXIT", true));
+                    finish();
+                }).create().show();
     }
 
     public static void setWindowFlag(Activity activity, final int bits, boolean on) {

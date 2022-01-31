@@ -1,7 +1,10 @@
 package com.flom.mobilecomputingproject;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.biometric.BiometricPrompt;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -11,16 +14,21 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Calendar;
+import java.util.concurrent.Executor;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -34,6 +42,12 @@ public class LoginActivity extends AppCompatActivity {
     private EditText TextIL_username; // Button used to launch the "openMainMenu()" method.
     private EditText TextIL_password; // Button used to launch the "openMainMenu()" method.
     private Switch switch_autofill;
+
+
+    private ImageButton button_biometric;
+    private BiometricPrompt biometricPrompt;
+    private BiometricPrompt.PromptInfo promptInfo;
+    private Executor executor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +73,11 @@ public class LoginActivity extends AppCompatActivity {
         TextIL_username = findViewById(R.id.ET_login_username);
         TextIL_password = findViewById(R.id.ET_login_password);
         switch_autofill = findViewById(R.id.switch_autofill);
+
+        button_biometric = findViewById(R.id.btn_login_biometric_signin);
+
+        if (preferences.getString("username", "").equals("") && preferences.getString("password", "").equals("")) button_biometric.setVisibility(View.GONE);
+        else button_biometric.setVisibility(View.VISIBLE);
 
         if (preferences.getBoolean("autofill", false)) {
             switch_autofill.setChecked(true);
@@ -86,6 +105,47 @@ public class LoginActivity extends AppCompatActivity {
         switch_autofill.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 changeAutofillPolicy(isChecked);
+            }
+        });
+
+
+        executor = ContextCompat.getMainExecutor(LoginActivity.this);
+
+        biometricPrompt = new BiometricPrompt(this, executor, new BiometricPrompt.AuthenticationCallback() {
+            @Override
+            public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+                super.onAuthenticationError(errorCode, errString);
+
+                Toast.makeText(LoginActivity.this, "Authentication error : " + errString, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+                super.onAuthenticationSucceeded(result);
+
+                //Toast.makeText(LoginActivity.this, "Authentication succeed", Toast.LENGTH_SHORT).show();
+                openMainMenu();
+            }
+
+            @Override
+            public void onAuthenticationFailed() {
+                super.onAuthenticationFailed();
+
+                Toast.makeText(LoginActivity.this, "Authentication failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Biometric authentication")
+                .setSubtitle("Login using fingerprint authentication")
+                .setNegativeButtonText("Cancel/ Use Password")
+                .build();
+
+
+        button_biometric.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                biometricPrompt.authenticate(promptInfo);
             }
         });
     }
@@ -149,7 +209,7 @@ public class LoginActivity extends AppCompatActivity {
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(android.R.string.yes, (arg0, arg1) -> {
                     setResult(RESULT_OK, new Intent().putExtra("EXIT", true));
-                    finish();
+                    finishAffinity();
                 }).create().show();
     }
 

@@ -24,4 +24,10 @@
     <string name="autofill_username">Autofill username</string>
     <string name="wrong_pass_error">Incorrect password.</string>
     <string name="wrong_username_error">Incorrect username.</string>
+
+    <string name="there_are_currently_no_reminders">There are currently no reminders.</string>
+
+    <string name="popup_message_confirmation_delete_account">Es-tu sûr(e) de vouloir supprimer ton compte ?</string>
+    <string name="popup_message_choice_yes">Oui !</string>
+    <string name="popup_message_choice_no">Non</string>
 </resources>

@@ -25,24 +25,6 @@
 
 
     <Button
-        android:id="@+id/btn_create_signup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/bg_button_white"
-        android:text="@string/sign_up"
-        android:textColor="#ffffff"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btn_create_signin"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TextIL_create_password_check"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Button
         android:id="@+id/btn_create_signin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -51,12 +33,32 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/bg_button_white"
+        android:theme="@style/Button.White"
         android:text="@string/sign_in"
-        android:textColor="#ffffff"
+        android:textColor="@color/purple_700"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_create_signup"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TextIL_create_password_check"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/btn_create_signup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/bg_button_white"
+        android:theme="@style/Button.Black"
+        android:text="@string/sign_up"
+        android:textColor="@color/purple_200"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btn_create_signup"
+        app:layout_constraintStart_toEndOf="@+id/btn_create_signin"
         app:layout_constraintTop_toBottomOf="@+id/TextIL_create_password_check"
         app:layout_constraintVertical_bias="0.0" />
 
@@ -68,7 +70,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="20dp"
-        android:textColorHint="#ffffff"
+        android:textColorHint="@color/purple_500"
         android:theme="@style/myEditTextStyle"
         app:counterEnabled="true"
         app:counterMaxLength="12"
@@ -85,7 +87,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/username"
-            android:textColor="#ffffff" />
+            android:inputType="text"
+            android:textColor="@color/purple_500" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -98,7 +101,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="20dp"
-        android:textColorHint="#ffffff"
+        android:textColorHint="@color/purple_500"
         android:theme="@style/myEditTextStyle"
         app:endIconMode="password_toggle"
         app:layout_constraintEnd_toEndOf="parent"
@@ -112,7 +115,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/password"
             android:inputType="textPassword"
-            android:textColor="#ffffff" />
+            android:textColor="@color/purple_500" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -125,7 +128,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="20dp"
-        android:textColorHint="#ffffff"
+        android:textColorHint="@color/purple_500"
         android:theme="@style/myEditTextStyle"
         app:endIconMode="password_toggle"
         app:layout_constraintEnd_toEndOf="parent"
@@ -139,7 +142,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/password"
             android:inputType="textPassword"
-            android:textColor="#ffffff" />
+            android:textColor="@color/purple_500" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

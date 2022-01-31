@@ -3,11 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/drawable/app_res_bg_rounded_corners.xml" value="0.2703125" />
         <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/drawable/bg_button_white.xml" value="0.1" />
+        <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/drawable/ic_account_circle_white_24.xml" value="0.2703125" />
         <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/layout/activity_create_account.xml" value="0.25271739130434784" />
         <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/layout/activity_login.xml" value="0.12360688956433637" />
         <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/layout/activity_main.xml" value="0.2" />
-        <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/layout/activity_main_menu.xml" value="0.25271739130434784" />
+        <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/layout/activity_main_menu.xml" value="0.1" />
+        <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/layout/activity_profile.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/layout/layout_item.xml" value="0.1" />
       </map>
     </option>
