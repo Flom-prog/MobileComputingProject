@@ -3,8 +3,6 @@
     <style name="Theme.MobileComputingProject" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <style name="myEditTextStyle">

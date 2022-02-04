@@ -86,6 +86,7 @@
             android:id="@+id/ET_create_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingEnd="50dp"
             android:hint="@string/username"
             android:inputType="text"
             android:textColor="@color/purple_500" />
@@ -113,6 +114,7 @@
             android:id="@+id/ET_create_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingEnd="50dp"
             android:hint="@string/password"
             android:inputType="textPassword"
             android:textColor="@color/purple_500" />
@@ -140,6 +142,7 @@
             android:id="@+id/ET_create_password_check"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingEnd="50dp"
             android:hint="@string/password"
             android:inputType="textPassword"
             android:textColor="@color/purple_500" />

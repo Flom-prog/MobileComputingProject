@@ -93,7 +93,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         String existing_username = preferences.getString("username", ""); //Gets the username from the SharedPreferences
 
         // Checks if the fields are valid
-        if (!usernametext.equals("") && username.length() < 12) { //if the username is correct
+        if (!usernametext.equals("") && username.length() <= 12) { //if the username is correct
             if (passwordtext.equals(passwordchecktext)) { //if the password is correct
                 if ((!passwordtext.equals("")) && (!passwordchecktext.equals(""))) { //if the mail is correct
                     if (!existing_username.equals("")) {
@@ -129,7 +129,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         }
         else { //If the username isn't correct
             if (username.length() < 1) username.setError(getString(R.string.create_acc_missing_username)); //Shows an error message indicating that the username isn't correct
-            else username.setError(getString(R.string.create_acc_too_long_username)); //Shows an error message indicating that the username isn't correct
+            if (username.length() > 12) username.setError(getString(R.string.create_acc_too_long_username)); //Shows an error message indicating that the username isn't correct
         }
     }
 
@@ -171,7 +171,7 @@ public class CreateAccountActivity extends AppCompatActivity {
             //morning
             constraintLayout.setBackground(getDrawable(R.drawable.good_morning_img));
             tvTimeMsg.setTextColor(getResources().getColor(R.color.white));
-        } else if (timeOfDay >= 10 && timeOfDay < 18) {
+        } else if (timeOfDay >= 10 && timeOfDay < 20) {
             // afternoon
             constraintLayout.setBackground(getDrawable(R.drawable.good_day_img));
             tvTimeMsg.setTextColor(getResources().getColor(R.color.black));

@@ -9,10 +9,11 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="colorPrimary">#FF6200EE</color>
+
+    <color name="grey_800">#222222</color>
     <color name="grey_600">#383838</color>
     <color name="grey_200">#a9a9a9</color>
-
-    <color name="colorPrimary">#FFFFFFFF</color>
 
     <color name="red">#eb4034</color>
     <color name="yellow">#fcba03</color>

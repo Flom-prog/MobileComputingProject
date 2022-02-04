@@ -16,7 +16,7 @@
         android:layout_marginTop="80dp"
         android:layout_marginEnd="8dp"
         android:fontFamily="@font/gotham"
-        android:text="Good Morning !"
+        android:text="@string/good_morning"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         android:textColor="#ffffff"
         app:layout_constraintEnd_toEndOf="parent"
@@ -103,6 +103,7 @@
             android:id="@+id/ET_login_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingEnd="50dp"
             android:hint="@string/username"
             android:textColor="@color/purple_500"
             android:inputType="text" />
@@ -154,6 +155,7 @@
             android:id="@+id/ET_login_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingEnd="50dp"
             android:hint="@string/password"
             android:inputType="textPassword"
             android:textColor="@color/purple_500" />

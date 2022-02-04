@@ -1,36 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MobileComputingProject</string>
-
-
-    <string name="exit">Exit ?</string>
-    <string name="exit_msg">Are you sure you want to exit ?</string>
-
-    <string name="create_acc_wrng_msg_1">There already is an account on this device.</string>
-    <string name="create_acc_wrng_msg_2">Creating a new account will result in the loss of all previously saved data on this app.</string>
-    <string name="create_acc_missing_pass">The password is missing.</string>
-    <string name="create_acc_pass_mismatch">The passwords entered do not match.</string>
-    <string name="create_acc_missing_username">The username is missing.</string>
-    <string name="create_acc_too_long_username">The username is too long.</string>
-    <string name="wrng_continue">Do you want to continue?</string>
-
-    <string name="ok">OK</string>
-    <string name="warning">Warning !</string>
-    <string name="cancel">CANCEL</string>
-    <string name="password">Password</string>
-    <string name="username">Username</string>
-    <string name="sign_in">Sign In</string>
-    <string name="sign_up">Sign Up</string>
-    <string name="create_your_account">Create your account !</string>
-    <string name="autofill_username">Autofill username</string>
-    <string name="wrong_pass_error">Incorrect password.</string>
-    <string name="wrong_username_error">Incorrect username.</string>
-
-    <string name="there_are_currently_no_reminders">There are currently no reminders.</string>
-
-    <string name="popup_message_confirmation_delete_account">Are you sure you want to delete your account?</string>
-    <string name="popup_message_choice_yes">Yes !</string>
-    <string name="popup_message_choice_no">No</string>
-    <string name="mettre_jour_les_donn_es">Update data</string>
     <string name="good_night">Good Night !</string>
     <string name="good_day">Good Day !</string>
     <string name="good_morning">Good Morning !</string>
@@ -46,6 +16,31 @@
     <string name="date_and_time">Date and Time</string>
     <string name="message">Message</string>
     <string name="add_reminder">Add reminder</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_in">Sign In</string>
+    <string name="exit">Exit ?</string>
+    <string name="exit_msg">Are you sure you want to exit ?</string>
+    <string name="create_acc_wrng_msg_1">There already is an account on this device.</string>
+    <string name="create_acc_wrng_msg_2">Creating a new account will result in the loss of all previously saved data on this app.</string>
+    <string name="create_acc_missing_pass">The password is missing.</string>
+    <string name="create_acc_pass_mismatch">The passwords entered do not match.</string>
+    <string name="create_acc_missing_username">The username is missing.</string>
+    <string name="create_acc_too_long_username">The username is too long.</string>
+    <string name="wrng_continue">Do you want to continue?</string>
+    <string name="ok">OK</string>
+    <string name="warning">Warning !</string>
+    <string name="cancel">CANCEL</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
+    <string name="create_your_account">Create your account !</string>
+    <string name="autofill_username">Autofill username</string>
+    <string name="wrong_pass_error">Incorrect password.</string>
+    <string name="wrong_username_error">Incorrect username.</string>
+    <string name="there_are_currently_no_reminders">There are currently no reminders.</string>
+    <string name="popup_message_confirmation_delete_account">Are you sure you want to delete your account?</string>
+    <string name="popup_message_choice_yes">Yes !</string>
+    <string name="popup_message_choice_no">No</string>
+    <string name="mettre_jour_les_donn_es">Update data</string>
     <string name="data_updated">Updated data</string>
     <string name="sure_exit_before_save">Are you sure you want to leave without registering?</string>
     <string name="delete_account">Delete my account</string>

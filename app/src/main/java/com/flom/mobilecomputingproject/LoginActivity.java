@@ -1,24 +1,19 @@
 package com.flom.mobilecomputingproject;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.biometric.BiometricPrompt;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.KeyEvent;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -27,8 +22,16 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.biometric.BiometricPrompt;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.concurrent.Executor;
+
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -62,6 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this); //Initializes the SharedPreferences
+
 
         constraintLayout = findViewById(R.id.containerlogin);
         tvTimeMsg = findViewById(R.id.tv_time_login_msg);
@@ -116,7 +120,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                 super.onAuthenticationError(errorCode, errString);
 
-                Toast.makeText(LoginActivity.this, "Authentication error : " + errString, Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, getString(R.string.authentication_error) + errString, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -131,14 +135,14 @@ public class LoginActivity extends AppCompatActivity {
             public void onAuthenticationFailed() {
                 super.onAuthenticationFailed();
 
-                Toast.makeText(LoginActivity.this, "Authentication failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, R.string.authentication_failed, Toast.LENGTH_SHORT).show();
             }
         });
 
         promptInfo = new BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Biometric authentication")
-                .setSubtitle("Login using fingerprint authentication")
-                .setNegativeButtonText("Cancel/ Use Password")
+                .setTitle(getString(R.string.biometric_authentication))
+                .setSubtitle(getString(R.string.login_using_fingerprint))
+                .setNegativeButtonText(getString(R.string.use_password))
                 .build();
 
 
@@ -206,8 +210,8 @@ public class LoginActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.exit))
                 .setMessage(getString(R.string.exit_msg))
-                .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(android.R.string.yes, (arg0, arg1) -> {
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.popup_message_choice_yes, (arg0, arg1) -> {
                     setResult(RESULT_OK, new Intent().putExtra("EXIT", true));
                     finishAffinity();
                 }).create().show();
@@ -223,18 +227,18 @@ public class LoginActivity extends AppCompatActivity {
         if (timeOfDay >= 6 && timeOfDay < 10) {
             //morning
             constraintLayout.setBackground(getDrawable(R.drawable.good_morning_img));
-            tvTimeMsg.setText("Good Morning !");
-            tvTimeMsg.setTextColor(getResources().getColor(R.color.white));
-        } else if (timeOfDay >= 10 && timeOfDay < 18) {
+            tvTimeMsg.setText(R.string.good_morning);
+            tvTimeMsg.setTextColor(getResources().getColor(R.color.grey_200));
+        } else if (timeOfDay >= 10 && timeOfDay < 20) {
             // afternoon
             constraintLayout.setBackground(getDrawable(R.drawable.good_day_img));
-            tvTimeMsg.setText("Good Day !");
-            tvTimeMsg.setTextColor(getResources().getColor(R.color.black));
+            tvTimeMsg.setText(R.string.good_day);
+            tvTimeMsg.setTextColor(getResources().getColor(R.color.grey_800));
         } else {
             //night
             constraintLayout.setBackground(getDrawable(R.drawable.good_night_img));
-            tvTimeMsg.setText("Good Night !");
-            tvTimeMsg.setTextColor(getResources().getColor(R.color.white));
+            tvTimeMsg.setText(R.string.good_night);
+            tvTimeMsg.setTextColor(getResources().getColor(R.color.grey_200));
         }
     }
 

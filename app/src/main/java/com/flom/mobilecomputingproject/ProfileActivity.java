@@ -84,18 +84,27 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void saveData() {
-        SharedPreferences.Editor editor = preferences.edit(); //Initializes the SharedPreferences' editor
 
         String username = usernameEditText.getText().toString();
         String password = passwordEditText.getText().toString();
 
-        //Saves each field in the SharedPreferences
-        if (!username.equals(preferences.getString("username", ""))) editor.putString("username", username);
-        if (!password.equals(preferences.getString("password", ""))) editor.putString("password", password);
+        if (username.length() > 0 && username.length() <= 12) { //if the username is correct
+            SharedPreferences.Editor editor = preferences.edit(); //Initializes the SharedPreferences' editor
 
-        editor.apply(); //Applies the changes
+            //Saves each field in the SharedPreferences
+            if (!username.equals(preferences.getString("username", "")) || !password.equals(preferences.getString("password", ""))) {
+                editor.putString("username", username);
+                editor.putString("password", password);
 
-        Snackbar.make(test, "Données mise à jour", Snackbar.LENGTH_SHORT).show();
+                editor.apply(); //Applies the changes
+
+                Snackbar.make(test, R.string.data_updated, Snackbar.LENGTH_SHORT).show();
+            } else Snackbar.make(test, R.string.no_data_to_update, Snackbar.LENGTH_SHORT).show();
+        }
+        else { //If the username isn't correct
+            if (username.length() < 1) usernameEditText.setError(getString(R.string.create_acc_missing_username)); //Shows an error message indicating that the username isn't correct
+            if (username.length() > 12) usernameEditText.setError(getString(R.string.create_acc_too_long_username)); //Shows an error message indicating that the username isn't correct
+        }
     }
 
     private void deleteAccount() {
@@ -118,7 +127,7 @@ public class ProfileActivity extends AppCompatActivity {
     private void openLogInMenu() {
         AlertDialog alerte = new AlertDialog.Builder(this).create();
         alerte.setTitle(getString(R.string.exit));
-        alerte.setMessage("\n"+ getString(R.string.exit_msg));
+        alerte.setMessage(getString(R.string.return_to_loginmenu));
 
         alerte.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.ok), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
@@ -142,7 +151,7 @@ public class ProfileActivity extends AppCompatActivity {
         if (!username.equals(preferences.getString("username", "")) || !password.equals(preferences.getString("password", ""))) {
             AlertDialog alerte = new AlertDialog.Builder(this).create();
             alerte.setTitle(getString(R.string.exit));
-            alerte.setMessage("\nÊtes-vous sûr de vouloir quitter sans avoir enregistré ?");
+            alerte.setMessage(getString(R.string.sure_exit_before_save));
 
             alerte.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.ok), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
