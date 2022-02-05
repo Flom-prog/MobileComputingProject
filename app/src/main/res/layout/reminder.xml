@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:layout_margin="8dp"
+    android:background="@color/grey_200"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/txtMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Message"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/txtReminder_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reminder_time"
+        android:textSize="20sp"
+        android:textStyle="italic" />
+    <TextView
+        android:id="@+id/txtCreation_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Creation_time"
+        android:textSize="20sp"
+        android:textStyle="italic" />
+
+</LinearLayout>

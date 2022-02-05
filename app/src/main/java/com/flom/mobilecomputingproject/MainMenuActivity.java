@@ -5,53 +5,68 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.TimePicker;
-import android.widget.Toast;
 
+import com.flom.mobilecomputingproject.database.DatabaseManager;
+import com.flom.mobilecomputingproject.database.RecyclerViewAdapter;
+import com.flom.mobilecomputingproject.model.Reminder;
+import com.flom.mobilecomputingproject.model.ReminderEnum;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.Calendar;
+import java.util.ArrayList;
 
 public class MainMenuActivity extends AppCompatActivity {
 
-    private FloatingActionButton addReminder;
-    private Dialog dialog;
+    private SharedPreferences preferences;
 
-    private RecyclerView recyclerView;
-
-    private ImageButton button_profile; //Button used to launch the "openProfile()" method.
+    private ImageButton button_profile, reminders_trash_button, reminders_settings_button, reminders_order_button;
 
     private final static int EXIT_CODE = 100; // code used to finish this activity
 
-    private Boolean isDateSet;
+    private TextView remindersCounter, noReminderHint, reminders_text_view;
+
+    private FloatingActionButton addReminder;
+    private RecyclerView recyclerView;
+    private ArrayList<Reminder> dataholder;     //Array list to add reminders and display in recyclerview
+    private RecyclerViewAdapter adapter;
+    private DatabaseManager myDB;
+
+    private ReminderEnum[] reminderEnums;
+    private int checkedItemOrder, checkedItemMode;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(this); //Initializes the SharedPreferences
+
         addReminder = findViewById(R.id.floating_action_button);
 
         recyclerView = findViewById(R.id.recyclerview);
 
         button_profile = findViewById(R.id.profile_button);
+        reminders_trash_button = findViewById(R.id.reminders_trash_button);
+        reminders_settings_button = findViewById(R.id.reminders_settings_button);
+        reminders_order_button = findViewById(R.id.reminders_order_button);
+
+        remindersCounter = findViewById(R.id.reminders_counter);
+        noReminderHint = findViewById(R.id.no_reminders_hint);
+        reminders_text_view = findViewById(R.id.reminders_text_view);
+
+        reminderEnums = ReminderEnum.values();
 
         // Set the animation from here
         /*LayoutAnimationController layoutAnimationController = AnimationUtils.loadLayoutAnimation(this, R.anim.layout_animation_fall_down);
@@ -60,7 +75,7 @@ public class MainMenuActivity extends AppCompatActivity {
         addReminder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addReminder();
+                openAddReminder();
             }
         });
 
@@ -72,83 +87,153 @@ public class MainMenuActivity extends AppCompatActivity {
             }
         });
 
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter();
+        reminders_trash_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDeleteAllAlert();
+            }
+        });
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        reminders_settings_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showReminderDisplayModesSelector();
+            }
+        });
 
-        recyclerView.setAdapter(adapter);
+        reminders_order_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (preferences.getString("ReminderDisplayOrder", "ASC").equals("ASC")) setReminderDisplayOrder("DESC");
+                else setReminderDisplayOrder("ASC");
+            }
+        });
+
+        myDB = new DatabaseManager(MainMenuActivity.this);
+        dataholder = new ArrayList<>();
+
+        reloadAll();
+    }
+
+    public void setReminderDisplayOrder(String order) {
+        SharedPreferences.Editor editor = preferences.edit(); //Initializes the SharedPreferences' editor
+        editor.putString("ReminderDisplayOrder", order);
+        editor.apply(); //Applies the changes
+
+        switch (order) {
+            case "ASC":
+                reminders_order_button.setImageDrawable(getDrawable(R.drawable.ic_asc_24));
+                break;
+            case "DESC":
+                reminders_order_button.setImageDrawable(getDrawable(R.drawable.ic_desc_24));
+                break;
+        }
+
+        reloadAll();
     }
 
 
+    private void showDeleteAllAlert() {
+        android.app.AlertDialog alerte = new android.app.AlertDialog.Builder(this).create();
+        alerte.setTitle(getString(R.string.warning));
+        alerte.setMessage(getString(R.string.reminders_delete_all_wrng_msg_1)+"\n\n"+getString(R.string.wrng_continue));
 
-    public void addReminder(){
-        dialog = new Dialog(MainMenuActivity.this);
-        dialog.setContentView(R.layout.floating_reminder_popup);
+        alerte.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.ok), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                myDB.deleteAllReminders();
+                reloadAll();
+            }
+        });
+        alerte.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        alerte.show();
+    }
 
-        TextView textView = dialog.findViewById(R.id.date);
-        ImageButton select = dialog.findViewById(R.id.selectDate);
-        Button add = dialog.findViewById(R.id.addButton);
-        EditText message = dialog.findViewById(R.id.message);
 
-        isDateSet = false;
+    /**
+     * Method used to show the Reminder display modes Selector
+     */
+    private void showReminderDisplayModesSelector() {
+        // setup the alert builder
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.reminders_editor_choose_display_mode));// add a radio button list
 
-        Calendar newCalender = Calendar.getInstance();
+        checkedItemMode = preferences.getInt("ReminderDisplayMode", 0);
 
-        select.setOnClickListener(new View.OnClickListener() {
+        String[] ReminderDisplayModesNames = new String[reminderEnums.length];
+
+        for (int i = 0; i < reminderEnums.length; i++) {
+            ReminderDisplayModesNames[i] = reminderEnums[i].toString();
+        }
+
+        builder.setSingleChoiceItems(ReminderDisplayModesNames, checkedItemMode, new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                isDateSet = true;
-
-                DatePickerDialog dialog = new DatePickerDialog(MainMenuActivity.this, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, final int year, final int month, final int dayOfMonth) {
-                        Calendar newDate = Calendar.getInstance();
-                        Calendar newTime = Calendar.getInstance();
-
-                        TimePickerDialog time = new TimePickerDialog(MainMenuActivity.this, new TimePickerDialog.OnTimeSetListener() {
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                newDate.set(year, month, dayOfMonth, hourOfDay, minute,0);
-
-                                Calendar tem = Calendar.getInstance();
-
-                                if (newDate.getTimeInMillis() - tem.getTimeInMillis() > 0) {
-                                    textView.setError(null);
-                                    textView.setTextColor(Color.BLACK);
-                                    textView.setText(dayOfMonth + " / " + (month + 1) + " / " + year + "\n" + hourOfDay + ":" + minute);
-                                }
-                                else Toast.makeText(MainMenuActivity.this, R.string.invalid_time, Toast.LENGTH_SHORT).show();
-                            }
-                        }, newTime.get(Calendar.HOUR_OF_DAY), newTime.get(Calendar.MINUTE),true);
-
-                        time.show();
-                    }
-                }, newCalender.get(Calendar.YEAR), newCalender.get(Calendar.MONTH),newCalender.get(Calendar.DAY_OF_MONTH));
-
-                dialog.getDatePicker().setMinDate(System.currentTimeMillis());
-                dialog.show();
+            public void onClick(DialogInterface dialog, int which) {
+                checkedItemMode = which;
             }
         });
 
-
-        add.setOnClickListener(new View.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                if (!isDateSet) {
-                    textView.setError("");
-                    textView.setTextColor(Color.RED);
-                    textView.setText(R.string.add_date_before_validate);
-                }
-                else Toast.makeText(MainMenuActivity.this, R.string.reminder_added, Toast.LENGTH_SHORT).show();
+            public void onClick(DialogInterface dialog, int selectedCategory) {
+                SharedPreferences.Editor editor = preferences.edit(); //Initializes the SharedPreferences' editor
+                editor.putInt("ReminderDisplayMode", checkedItemMode);
+                editor.apply(); //Applies the changes
+
+                reloadAll();
             }
         });
 
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        builder.setNegativeButton(getString(R.string.cancel), null);
+
+        androidx.appcompat.app.AlertDialog dialog = builder.create();
         dialog.show();
     }
 
 
 
+    public void storeDataInArray() {
+        dataholder.clear();
+
+        Cursor cursor = myDB.readAllReminders(reminderEnums[preferences.getInt("ReminderDisplayMode", 0)].toString(), preferences.getString("ReminderDisplayOrder", "ASC"));
+        while (cursor.moveToNext()) {
+            Reminder reminder = new Reminder(cursor.getString(1), cursor.getString(2), cursor.getString(3));
+            dataholder.add(reminder);
+        }
+    }
+
+
+    private void reloadRecycleView() {
+        adapter = new RecyclerViewAdapter(MainMenuActivity.this, dataholder);
+        recyclerView.setAdapter(adapter);      //Binds the adapter with recyclerview
+        recyclerView.setLayoutManager(new LinearLayoutManager(MainMenuActivity.this));
+    }
+
+
+    private void setupNoteCounter() {
+        //Updates the notes_counter TextView with the current amount of notes
+        remindersCounter.setText(String.valueOf(dataholder.size()));
+
+        if (dataholder.size() == 1) {
+            reminders_text_view.setText(R.string.reminder);
+        } else {
+            reminders_text_view.setText(R.string.reminders);
+        }
+    }
+
+    private void setupNoNoteHint() {
+        if (dataholder.isEmpty()) noReminderHint.setVisibility(View.VISIBLE);
+        else noReminderHint.setVisibility(View.GONE);
+    }
+
+    private void reloadAll() {
+        storeDataInArray();
+        reloadRecycleView();
+        setupNoNoteHint();
+        setupNoteCounter();
+    }
 
     /**
      * Method used to launch the openLogInMenu() method when the back button is pressed
@@ -179,7 +264,15 @@ public class MainMenuActivity extends AppCompatActivity {
     }
 
     /**
-     * Method used to open the Settings page.
+     * Method used to open the Add Reminder page.
+     */
+    private void openAddReminder() {
+        Intent intent = new Intent(this, AddReminderActivity.class);
+        startActivity(intent);
+    }
+
+    /**
+     * Method used to open the Profile page.
      */
     private void openProfile() {
         Intent intent = new Intent(this, ProfileActivity.class);

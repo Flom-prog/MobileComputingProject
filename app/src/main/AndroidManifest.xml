@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MobileComputingProject">
         <activity
+            android:name=".AddReminderActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+        <activity
             android:name=".ProfileActivity"
             android:exported="false" />
         <activity
@@ -21,7 +27,7 @@
             android:name=".CreateAccountActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".LoadingActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

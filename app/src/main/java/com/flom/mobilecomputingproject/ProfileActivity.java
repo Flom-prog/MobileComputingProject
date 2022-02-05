@@ -22,7 +22,7 @@ public class ProfileActivity extends AppCompatActivity {
     private SharedPreferences preferences;
 
     private Button saveDataButton, signOutButton, deleteButton;
-    private TextView usernameEditText, passwordEditText;
+    private TextView usernameEditText, passwordEditText, total_number_of_reminders;
     private ImageButton profilePicture;
 
     private View test;
@@ -37,6 +37,8 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(this); //Initializes the SharedPreferences
+
         profilePicture = findViewById(R.id.profilePicture);
         saveDataButton = findViewById(R.id.saveDataButton);
         signOutButton = findViewById(R.id.signOutButton);
@@ -44,6 +46,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         usernameEditText = findViewById(R.id.usernameEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
+        total_number_of_reminders = findViewById(R.id.total_number_of_reminders);
 
         test = findViewById(R.id.test);
 
@@ -81,6 +84,8 @@ public class ProfileActivity extends AppCompatActivity {
                     .show();
 
         });
+
+        total_number_of_reminders.setText(String.valueOf(preferences.getInt("TotalNumberOfReminders", 0)));
     }
 
     private void saveData() {

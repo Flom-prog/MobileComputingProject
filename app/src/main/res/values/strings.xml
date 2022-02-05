@@ -42,6 +42,7 @@
     <string name="invalid_time">Invalid time</string>
     <string name="reminder_added">Reminder added</string>
     <string name="reminders">" reminders"</string>
+    <string name="reminder">" reminder"</string>
     <string name="number_of_reminders">Number of reminders</string>
     <string name="date_and_time">Date and Time</string>
     <string name="message">Message</string>
@@ -51,6 +52,11 @@
     <string name="delete_account">Delete my account</string>
     <string name="log_out">Log out</string>
     <string name="add_date_before_validate">You must add a date before validating</string>
+    <string name="add_message_before_validate">You must add a message before validating</string>
     <string name="no_data_to_update">No data to update</string>
     <string name="return_to_loginmenu">You will be logged out and then returned to the login screen</string>
+    <string name="reminder_not_added">Reminder not added</string>
+    <string name="reminders_delete_all_wrng_msg_1">You\'re about to delete all reminders saved on this device.</string>
+    <string name="reminders_editor_choose_display_mode">Choose a reminder display mode</string>
+    <string name="reminders_editor_choose_display_order">Choose a reminder display order</string>
 </resources>
