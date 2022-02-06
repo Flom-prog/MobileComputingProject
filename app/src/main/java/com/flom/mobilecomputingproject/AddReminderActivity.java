@@ -94,8 +94,8 @@ public class AddReminderActivity extends AppCompatActivity {
                                         minuteModified = "0" + minute;
                                     } else minuteModified = String.valueOf(minute);
 
-                                    reminder_time_textview = dayOfMonthModified + "/" + monthModified + "/" + year + " - " + hourOfDayModified + ":" + minuteModified;
-                                    datetextview.setText(dayOfMonthModified + " / " + monthModified + " / " + year + "\n" + hourOfDayModified + ":" + minuteModified);
+                                    reminder_time_textview = year + "-" + monthModified + "-" + dayOfMonthModified + " " + hourOfDayModified + ":" + minuteModified + ":00";
+                                    datetextview.setText(year + "-" + monthModified + "-" + dayOfMonthModified + "\n" + hourOfDayModified + ":" + minuteModified);
                                 }
                                 else Toast.makeText(AddReminderActivity.this, R.string.invalid_time, Toast.LENGTH_SHORT).show();
                             }
@@ -131,7 +131,7 @@ public class AddReminderActivity extends AppCompatActivity {
     }
 
     private void processinsert(String message) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy - HH:mm", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         String creation_time = sdf.format(new Date());
 
         DatabaseManager myDB = new DatabaseManager(AddReminderActivity.this);

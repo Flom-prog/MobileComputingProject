@@ -65,7 +65,10 @@ public class DatabaseManager extends SQLiteOpenHelper {
     public Cursor readAllReminders(String filter, String order) {
         SQLiteDatabase database = this.getReadableDatabase();
 
-        String query = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + filter + " " + order;   //Sql query to  retrieve  data from the database
+        String query;
+
+        if (filter.equals(COLUMN_REMINDER_TIME) || filter.equals(COLUMN_CREATION_TIME)) query = "SELECT * FROM " + TABLE_NAME + " ORDER BY DATETIME(" + filter + ") " + order;   //Sql query to  retrieve  data from the database
+        else query = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + filter + " " + order;
 
         Cursor cursor = null;
         if (database != null) {
