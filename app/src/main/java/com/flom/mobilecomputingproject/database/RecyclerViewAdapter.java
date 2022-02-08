@@ -1,6 +1,7 @@
 package com.flom.mobilecomputingproject.database;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         this.dataholder = dataholder;
     }
 
+    // inflates the row layout from xml when needed
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -32,28 +34,46 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return new ViewHolder(view);
     }
 
+    // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        holder.txtReminderId.setText(String.valueOf(dataholder.get(position).getReminder_id()));
+
         holder.message.setText(dataholder.get(position).getMessage());     //Binds the single reminder objects to recycler view
         holder.reminder_time.setText(dataholder.get(position).getReminder_time());
         holder.creation_time.setText(dataholder.get(position).getCreation_time());
+
+        holder.reminder_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("CCCCC", (String) holder.txtReminderId.getText());
+            }
+        });
     }
 
+    // total number of rows
     @Override
     public int getItemCount() {
         return dataholder.size();
     }
 
+
+    // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView message, reminder_time, creation_time;
+        public View reminder_layout, viewBackground;
+        private TextView txtReminderId, message, reminder_time, creation_time;
 
         public ViewHolder(@NonNull View itemview) {
             super(itemview);
 
-            message = (TextView) itemView.findViewById(R.id.txtMessage);   //holds the reference of the materials to show data in recyclerview
-            reminder_time = (TextView) itemView.findViewById(R.id.txtReminder_time);
-            creation_time = (TextView) itemView.findViewById(R.id.txtCreation_time);
+            reminder_layout = itemview.findViewById(R.id.reminder_layout);
+            viewBackground = itemView.findViewById(R.id.view_background);
+
+            txtReminderId = itemview.findViewById(R.id.txtReminderId);
+            message = itemview.findViewById(R.id.txtMessage);   //holds the reference of the materials to show data in recyclerview
+            reminder_time = itemview.findViewById(R.id.txtReminder_time);
+            creation_time = itemview.findViewById(R.id.txtCreation_time);
         }
     }
 }

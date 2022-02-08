@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1" />
+        <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/drawable/app_res_bg_note_delete.xml" value="0.2703125" />
         <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/drawable/app_res_bg_reminder.xml" value="0.2703125" />
         <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/drawable/app_res_bg_reminder_date.xml" value="0.2703125" />
         <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/drawable/app_res_bg_rounded_corners.xml" value="0.2703125" />
@@ -23,7 +24,7 @@
         <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/layout/activity_reminder.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/layout/floating_reminder_popup.xml" value="0.1" />
         <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/layout/layout_item.xml" value="0.1" />
-        <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/layout/reminder.xml" value="0.12360688956433637" />
+        <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/layout/reminder.xml" value="0.264" />
         <entry key="..\:/Users/flori/AndroidStudioProjects/MobileComputingProject/app/src/main/res/layout/test.xml" value="0.1296875" />
       </map>
     </option>

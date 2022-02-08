@@ -1,32 +1,35 @@
 package com.flom.mobilecomputingproject;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+        import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
+        import android.app.AlertDialog;
+        import android.content.Context;
+        import android.content.DialogInterface;
+        import android.content.Intent;
+        import android.content.SharedPreferences;
+        import android.database.Cursor;
+        import android.os.Bundle;
+        import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
-import android.widget.ImageButton;
-import android.widget.TextView;
+        import android.view.animation.AnimationUtils;
+        import android.view.animation.LayoutAnimationController;
+        import android.widget.ImageButton;
+        import android.widget.TextView;
 
-import com.flom.mobilecomputingproject.database.DatabaseManager;
-import com.flom.mobilecomputingproject.database.RecyclerViewAdapter;
-import com.flom.mobilecomputingproject.model.Reminder;
-import com.flom.mobilecomputingproject.model.ReminderEnum;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+        import com.flom.mobilecomputingproject.database.DatabaseManager;
+        import com.flom.mobilecomputingproject.database.RecyclerViewAdapter;
+        import com.flom.mobilecomputingproject.model.Reminder;
+        import com.flom.mobilecomputingproject.model.ReminderEnum;
+        import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
-public class MainMenuActivity extends AppCompatActivity {
+public class MainMenuActivity extends AppCompatActivity implements ReminderItemTouchHelper.RecyclerItemTouchHelperListener {
 
     private SharedPreferences preferences;
 
@@ -43,7 +46,9 @@ public class MainMenuActivity extends AppCompatActivity {
     private DatabaseManager myDB;
 
     private ReminderEnum[] reminderEnums;
-    private int checkedItemOrder, checkedItemMode;
+    private int checkedItemMode;
+
+    private int idOfItemRemoved;
 
 
     @Override
@@ -68,9 +73,6 @@ public class MainMenuActivity extends AppCompatActivity {
 
         reminderEnums = ReminderEnum.values();
 
-        // Set the animation from here
-        /*LayoutAnimationController layoutAnimationController = AnimationUtils.loadLayoutAnimation(this, R.anim.layout_animation_fall_down);
-        recyclerView.setLayoutAnimation(layoutAnimationController);*/
 
         addReminder.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,6 +103,9 @@ public class MainMenuActivity extends AppCompatActivity {
             }
         });
 
+        if (preferences.getString("ReminderDisplayOrder", "ASC").equals("ASC")) reminders_order_button.setImageDrawable(getDrawable(R.drawable.ic_asc_24));
+        else reminders_order_button.setImageDrawable(getDrawable(R.drawable.ic_desc_24));
+
         reminders_order_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -109,11 +114,48 @@ public class MainMenuActivity extends AppCompatActivity {
             }
         });
 
+
         myDB = new DatabaseManager(MainMenuActivity.this);
         dataholder = new ArrayList<>();
 
+        //Swipe
+        ReminderItemTouchHelper noteItemTouchHelper = new ReminderItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+
+        //attaching the touch helper to recycler view
+        new ItemTouchHelper(noteItemTouchHelper).attachToRecyclerView(recyclerView);
+
         reloadAll();
     }
+
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+
+        if (viewHolder instanceof RecyclerViewAdapter.ViewHolder) {
+            // get the removed item name to display it in snack bar
+            idOfItemRemoved = dataholder.get(position).getReminder_id();
+            String message = dataholder.get(position).getMessage();
+            String reminder_time = dataholder.get(position).getReminder_time();
+            String creation_time = dataholder.get(position).getCreation_time();
+
+            // remove the item from recycler view
+            myDB.deleteReminder(idOfItemRemoved);
+            reloadAll();
+
+            // showing snack bar with Undo option
+            Snackbar snackbar = Snackbar.make(recyclerView, "\"" + message + getString(R.string.reminders_was_deleted), Snackbar.LENGTH_LONG);
+            snackbar.setAction(getString(R.string.undo), new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // undo is selected, restore the deleted item
+                    myDB.addReminder(message, reminder_time, creation_time);
+                    reloadAll();
+                }
+            });
+            snackbar.show();
+        }
+    }
+
 
     public void setReminderDisplayOrder(String order) {
         SharedPreferences.Editor editor = preferences.edit(); //Initializes the SharedPreferences' editor
@@ -198,8 +240,9 @@ public class MainMenuActivity extends AppCompatActivity {
         dataholder.clear();
 
         Cursor cursor = myDB.readAllReminders(reminderEnums[preferences.getInt("ReminderDisplayMode", 0)].toString(), preferences.getString("ReminderDisplayOrder", "ASC"));
+
         while (cursor.moveToNext()) {
-            Reminder reminder = new Reminder(cursor.getString(1), cursor.getString(2), cursor.getString(3));
+            Reminder reminder = new Reminder(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3));
             dataholder.add(reminder);
         }
     }
@@ -233,6 +276,11 @@ public class MainMenuActivity extends AppCompatActivity {
         reloadRecycleView();
         setupNoNoteHint();
         setupNoteCounter();
+
+        // Set the animation from here
+        LayoutAnimationController layoutAnimationController = AnimationUtils.loadLayoutAnimation(this, R.anim.layout_animation_fall_down);
+        recyclerView.setLayoutAnimation(layoutAnimationController);
+        recyclerView.scheduleLayoutAnimation();
     }
 
     /**
@@ -296,16 +344,5 @@ public class MainMenuActivity extends AppCompatActivity {
                 }
             }
         }
-    }
-
-
-    private void runLayoutAnimation(RecyclerView recyclerView) {
-        Context context = recyclerView.getContext();
-
-        LayoutAnimationController layoutAnimationController = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down);
-
-        recyclerView.setLayoutAnimation(layoutAnimationController);
-        recyclerView.getAdapter().notifyDataSetChanged();
-        recyclerView.scheduleLayoutAnimation();
     }
 }

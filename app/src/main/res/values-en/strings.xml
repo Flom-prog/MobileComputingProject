@@ -54,4 +54,7 @@
     <string name="reminders_delete_all_wrng_msg_1">You\'re about to delete all reminders saved on this device.</string>
     <string name="reminders_editor_choose_display_mode">Choose a reminder display mode</string>
     <string name="reminders_editor_choose_display_order">Choose a reminder display order</string>
+    <string name="reminders_was_deleted">\" was deleted !</string>
+    <string name="undo">UNDO</string>
+    <string name="delete">Delete</string>
 </resources>

@@ -45,6 +45,21 @@ public class DatabaseManager extends SQLiteOpenHelper {
         onCreate(sqLiteDatabase);
     }
 
+    public Cursor readAllReminders(String filter, String order) {
+        SQLiteDatabase database = this.getReadableDatabase();
+
+        String query;
+
+        if (filter.equals(COLUMN_REMINDER_TIME) || filter.equals(COLUMN_CREATION_TIME)) query = "SELECT * FROM " + TABLE_NAME + " ORDER BY DATETIME(" + filter + ") " + order;   //Sql query to  retrieve  data from the database
+        else query = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + filter + " " + order;
+
+        Cursor cursor = null;
+        if (database != null) {
+            cursor = database.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
     public void addReminder(String message, String reminder_time, String creation_time) {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -62,58 +77,14 @@ public class DatabaseManager extends SQLiteOpenHelper {
         }
     }
 
-    public Cursor readAllReminders(String filter, String order) {
-        SQLiteDatabase database = this.getReadableDatabase();
-
-        String query;
-
-        if (filter.equals(COLUMN_REMINDER_TIME) || filter.equals(COLUMN_CREATION_TIME)) query = "SELECT * FROM " + TABLE_NAME + " ORDER BY DATETIME(" + filter + ") " + order;   //Sql query to  retrieve  data from the database
-        else query = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + filter + " " + order;
-
-        Cursor cursor = null;
-        if (database != null) {
-            cursor = database.rawQuery(query, null);
-        }
-        return cursor;
-    }
-
     public void deleteAllReminders() {
-        SQLiteDatabase database = this.getReadableDatabase();
+        SQLiteDatabase database = this.getWritableDatabase();
         database.execSQL("DELETE FROM " + TABLE_NAME);
     }
 
 
-    /*// below is the method for updating our courses
-    public void updateCourse(String originalCourseName, String courseName, String courseDescription,
-                             String courseTracks, String courseDuration) {
-
-        // calling a method to get writable database.
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-
-        // on below line we are passing all values
-        // along with its key and value pair.
-        values.put(NAME_COL, courseName);
-        values.put(DURATION_COL, courseDuration);
-        values.put(DESCRIPTION_COL, courseDescription);
-        values.put(TRACKS_COL, courseTracks);
-
-        // on below line we are calling a update method to update our database and passing our values.
-        // and we are comparing it with name of our course which is stored in original name variable.
-        db.update(TABLE_NAME, values, "name=?", new String[]{originalCourseName});
-        db.close();
+    public void deleteReminder(int id) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + COLUMN_ID + " = " + id);
     }
-
-    // below is the method for deleting our course.
-    public void deleteCourse(String courseName) {
-
-        // on below line we are creating
-        // a variable to write our database.
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        // on below line we are calling a method to delete our
-        // course and we are comparing it with our course name.
-        db.delete(TABLE_NAME, "name=?", new String[]{courseName});
-        db.close();
-    }*/
 }

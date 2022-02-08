@@ -2,7 +2,7 @@ package com.flom.mobilecomputingproject.model;
 
 public class Reminder {
 
-    private int creator_id;
+    private int reminder_id, creator_id;
     private String message, reminder_time, creation_time;
     private double location_x, location_y;
     private boolean reminder_seen;
@@ -10,7 +10,8 @@ public class Reminder {
     public Reminder() {
     }
 
-    public Reminder(String message, String reminder_time, String creation_time) {
+    public Reminder(int reminder_id, String message, String reminder_time, String creation_time) {
+        this.reminder_id = reminder_id;
         this.message = message;
         this.reminder_time = reminder_time;
         this.creation_time = creation_time;
@@ -24,6 +25,14 @@ public class Reminder {
         this.location_x = location_x;
         this.location_y = location_y;
         this.reminder_seen = reminder_seen;
+    }
+
+    public int getReminder_id() {
+        return reminder_id;
+    }
+
+    public void setReminder_id(int reminder_id) {
+        this.reminder_id = reminder_id;
     }
 
     public int getCreator_id() {
