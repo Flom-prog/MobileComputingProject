@@ -47,6 +47,7 @@
     <string name="date_and_time">Date and Time</string>
     <string name="message">Message</string>
     <string name="add_reminder">Add reminder</string>
+    <string name="update_reminder">Update reminder</string>
     <string name="data_updated">Updated data</string>
     <string name="sure_exit_before_save">Are you sure you want to leave without registering?</string>
     <string name="delete_account">Delete my account</string>

@@ -1,6 +1,7 @@
-package com.flom.mobilecomputingproject.database;
+package com.flom.mobilecomputingproject.controller;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.flom.mobilecomputingproject.AddReminderActivity;
 import com.flom.mobilecomputingproject.R;
+import com.flom.mobilecomputingproject.ReminderEditorActivity;
 import com.flom.mobilecomputingproject.model.Reminder;
 
 import java.util.ArrayList;
@@ -46,7 +49,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.reminder_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("CCCCC", (String) holder.txtReminderId.getText());
+                Intent intent = new Intent(context, ReminderEditorActivity.class);
+                intent.putExtra("reminder_edit", Integer.valueOf((String) holder.txtReminderId.getText()));
+                context.startActivity(intent);
             }
         });
     }

@@ -17,6 +17,7 @@
     <string name="date_and_time">Date and Time</string>
     <string name="message">Message</string>
     <string name="add_reminder">Add reminder</string>
+    <string name="update_reminder">Update reminder</string>
     <string name="sign_up">Sign Up</string>
     <string name="sign_in">Sign In</string>
     <string name="exit">Exit ?</string>

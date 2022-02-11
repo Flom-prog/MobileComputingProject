@@ -60,6 +60,19 @@ public class DatabaseManager extends SQLiteOpenHelper {
         return cursor;
     }
 
+
+    public Cursor readOneReminder(int id) {
+        SQLiteDatabase database = this.getReadableDatabase();
+
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_ID + " = " + id;
+
+        Cursor cursor = null;
+        if (database != null) {
+            cursor = database.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
     public void addReminder(String message, String reminder_time, String creation_time) {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -86,5 +99,10 @@ public class DatabaseManager extends SQLiteOpenHelper {
     public void deleteReminder(int id) {
         SQLiteDatabase database = this.getWritableDatabase();
         database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + COLUMN_ID + " = " + id);
+    }
+
+    public void updateReminder(int reminder_id, String message, String reminder_time_textview) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.execSQL("UPDATE " + TABLE_NAME + " SET " + COLUMN_MESSAGE + " = '" + message + "', " + COLUMN_REMINDER_TIME + " = '" + reminder_time_textview + "' WHERE " + COLUMN_ID + " = " + reminder_id);
     }
 }

@@ -6,22 +6,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
         import androidx.recyclerview.widget.RecyclerView;
 
         import android.app.AlertDialog;
-        import android.content.Context;
-        import android.content.DialogInterface;
+import android.content.DialogInterface;
         import android.content.Intent;
         import android.content.SharedPreferences;
         import android.database.Cursor;
         import android.os.Bundle;
         import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
         import android.view.animation.AnimationUtils;
         import android.view.animation.LayoutAnimationController;
         import android.widget.ImageButton;
         import android.widget.TextView;
 
-        import com.flom.mobilecomputingproject.database.DatabaseManager;
-        import com.flom.mobilecomputingproject.database.RecyclerViewAdapter;
+import com.flom.mobilecomputingproject.controller.ReminderItemTouchHelper;
+import com.flom.mobilecomputingproject.database.DatabaseManager;
+        import com.flom.mobilecomputingproject.controller.RecyclerViewAdapter;
         import com.flom.mobilecomputingproject.model.Reminder;
         import com.flom.mobilecomputingproject.model.ReminderEnum;
         import com.google.android.material.floatingactionbutton.FloatingActionButton;

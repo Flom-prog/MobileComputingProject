@@ -1,13 +1,10 @@
-package com.flom.mobilecomputingproject;
+package com.flom.mobilecomputingproject.controller;
 
 import android.graphics.Canvas;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.flom.mobilecomputingproject.database.RecyclerViewAdapter;
 
 public class ReminderItemTouchHelper extends ItemTouchHelper.SimpleCallback {
 

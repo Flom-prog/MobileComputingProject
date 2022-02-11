@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MobileComputingProject">
         <activity
+            android:name=".ReminderEditorActivity"
+            android:exported="false" />
+        <activity
             android:name=".AddReminderActivity"
             android:exported="false" />
         <activity
