@@ -55,28 +55,53 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone" />
 
-            <TextView
-                android:id="@+id/txtMessage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Message"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/txtReminder_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Reminder_time"
-                android:textSize="20sp"
-                android:textStyle="italic" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/txtMessage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="Message"
+                        android:textSize="26sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtReminder_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="8dp"
+                        android:text="Reminder_time"
+                        android:textSize="18sp"
+                        android:textStyle="bold|italic" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/imageReminder"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:scaleType="centerCrop"
+                    android:layout_gravity="end|center_vertical"/>
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/txtCreation_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="5dp"
                 android:text="Creation_time"
-                android:textSize="20sp"
+                android:textSize="12sp"
                 android:textStyle="italic" />
 
         </LinearLayout>

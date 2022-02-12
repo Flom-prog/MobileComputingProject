@@ -12,6 +12,7 @@ import android.content.DialogInterface;
         import android.database.Cursor;
         import android.os.Bundle;
         import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
         import android.view.animation.AnimationUtils;
         import android.view.animation.LayoutAnimationController;
@@ -26,7 +27,13 @@ import com.flom.mobilecomputingproject.database.DatabaseManager;
         import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class MainMenuActivity extends AppCompatActivity implements ReminderItemTouchHelper.RecyclerItemTouchHelperListener {
 
@@ -134,6 +141,7 @@ public class MainMenuActivity extends AppCompatActivity implements ReminderItemT
             // get the removed item name to display it in snack bar
             idOfItemRemoved = dataholder.get(position).getReminder_id();
             String message = dataholder.get(position).getMessage();
+            String picture = dataholder.get(position).getImage_reminder();
             String reminder_time = dataholder.get(position).getReminder_time();
             String creation_time = dataholder.get(position).getCreation_time();
 
@@ -146,8 +154,19 @@ public class MainMenuActivity extends AppCompatActivity implements ReminderItemT
             snackbar.setAction(getString(R.string.undo), new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    SimpleDateFormat fmt = new SimpleDateFormat("EEEE dd LLLL yyyy --- HH:mm", Locale.getDefault());
+                    Date date = null;
+                    try {
+                        date = fmt.parse(reminder_time);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    SimpleDateFormat fmtOut = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                    String new_reminder_time = fmtOut.format(date);
+
                     // undo is selected, restore the deleted item
-                    myDB.addReminder(message, reminder_time, creation_time);
+                    myDB.addReminder(message, picture, new_reminder_time, creation_time);
                     reloadAll();
                 }
             });
@@ -241,7 +260,18 @@ public class MainMenuActivity extends AppCompatActivity implements ReminderItemT
         Cursor cursor = myDB.readAllReminders(reminderEnums[preferences.getInt("ReminderDisplayMode", 0)].toString(), preferences.getString("ReminderDisplayOrder", "ASC"));
 
         while (cursor.moveToNext()) {
-            Reminder reminder = new Reminder(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3));
+            SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            Date date = null;
+            try {
+                date = fmt.parse(cursor.getString(3));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            SimpleDateFormat fmtOut = new SimpleDateFormat("EEEE dd LLLL yyyy --- HH:mm", Locale.getDefault());
+            String reminder_time = fmtOut.format(date);
+
+            Reminder reminder = new Reminder(cursor.getInt(0), cursor.getString(1), cursor.getString(2), reminder_time, cursor.getString(4));
             dataholder.add(reminder);
         }
     }

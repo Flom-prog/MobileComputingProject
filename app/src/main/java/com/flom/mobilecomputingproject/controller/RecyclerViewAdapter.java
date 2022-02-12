@@ -2,10 +2,12 @@ package com.flom.mobilecomputingproject.controller;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -43,6 +45,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.txtReminderId.setText(String.valueOf(dataholder.get(position).getReminder_id()));
 
         holder.message.setText(dataholder.get(position).getMessage());     //Binds the single reminder objects to recycler view
+        holder.picture.setImageURI(Uri.parse(dataholder.get(position).getImage_reminder()));
         holder.reminder_time.setText(dataholder.get(position).getReminder_time());
         holder.creation_time.setText(dataholder.get(position).getCreation_time());
 
@@ -68,6 +71,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         public View reminder_layout, viewBackground;
         private TextView txtReminderId, message, reminder_time, creation_time;
+        private ImageView picture;
 
         public ViewHolder(@NonNull View itemview) {
             super(itemview);
@@ -77,6 +81,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
             txtReminderId = itemview.findViewById(R.id.txtReminderId);
             message = itemview.findViewById(R.id.txtMessage);   //holds the reference of the materials to show data in recyclerview
+            picture = itemview.findViewById(R.id.imageReminder);
             reminder_time = itemview.findViewById(R.id.txtReminder_time);
             creation_time = itemview.findViewById(R.id.txtCreation_time);
         }

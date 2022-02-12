@@ -172,7 +172,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
 
-    public void imageSelect() {
+    private void imageSelect() {
         Intent intent;
         if (Build.VERSION.SDK_INT < 19) {
             intent = new Intent(Intent.ACTION_GET_CONTENT);

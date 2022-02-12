@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -18,6 +19,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +41,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private ConstraintLayout constraintLayout;
     private TextView tvTimeMsg;
+
+    private ImageView profileLoginPicture;
 
     private Button button_login; // Button used to launch the "openMainMenu()" method.
     private Button button_createAccount; // Button used to launch the "openCreateAccountMenu()" method.
@@ -70,6 +74,8 @@ public class LoginActivity extends AppCompatActivity {
         constraintLayout = findViewById(R.id.containerlogin);
         tvTimeMsg = findViewById(R.id.tv_time_login_msg);
 
+        profileLoginPicture = findViewById(R.id.profileLoginPicture);
+
         setBackground();
 
         button_login = findViewById(R.id.btn_login_signin);
@@ -79,6 +85,10 @@ public class LoginActivity extends AppCompatActivity {
         switch_autofill = findViewById(R.id.switch_autofill);
 
         button_biometric = findViewById(R.id.btn_login_biometric_signin);
+
+
+        String mImageUri = preferences.getString("image", null);
+        if (mImageUri != null) profileLoginPicture.setImageURI(Uri.parse(mImageUri));
 
         if (preferences.getString("username", "").equals("") && preferences.getString("password", "").equals("")) button_biometric.setVisibility(View.GONE);
         else button_biometric.setVisibility(View.VISIBLE);

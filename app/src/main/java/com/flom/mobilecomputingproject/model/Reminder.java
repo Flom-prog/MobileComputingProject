@@ -3,16 +3,17 @@ package com.flom.mobilecomputingproject.model;
 public class Reminder {
 
     private int reminder_id, creator_id;
-    private String message, reminder_time, creation_time;
+    private String message, image_reminder, reminder_time, creation_time;
     private double location_x, location_y;
     private boolean reminder_seen;
 
     public Reminder() {
     }
 
-    public Reminder(int reminder_id, String message, String reminder_time, String creation_time) {
+    public Reminder(int reminder_id, String message, String image_reminder, String reminder_time, String creation_time) {
         this.reminder_id = reminder_id;
         this.message = message;
+        this.image_reminder = image_reminder;
         this.reminder_time = reminder_time;
         this.creation_time = creation_time;
     }
@@ -49,6 +50,14 @@ public class Reminder {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getImage_reminder() {
+        return image_reminder;
+    }
+
+    public void setImage_reminder(String image_reminder) {
+        this.image_reminder = image_reminder;
     }
 
     public String getReminder_time() {

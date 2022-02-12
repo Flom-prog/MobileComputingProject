@@ -58,4 +58,6 @@
     <string name="reminders_was_deleted">\" was deleted !</string>
     <string name="undo">UNDO</string>
     <string name="delete">Delete</string>
+    <string name="add_picture_before_validate">You must add a picture before validating</string>
+    <string name="created_on">"Created on : "</string>
 </resources>

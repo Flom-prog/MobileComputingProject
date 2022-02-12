@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -30,6 +32,11 @@ import java.util.Locale;
 
 public class ReminderEditorActivity extends AppCompatActivity {
 
+    private TextView picturetextview;
+    private ImageButton selectPicture;
+    private final static int RESULT_LOAD_IMG = 5;
+    private Uri mImageUri;
+
     private TextView datetextview;
     private ImageButton selectDate;
 
@@ -46,6 +53,8 @@ public class ReminderEditorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reminder_editor);
 
+        picturetextview = findViewById(R.id.picture);
+        selectPicture = findViewById(R.id.selectPicture);
         datetextview = findViewById(R.id.date);
         selectDate = findViewById(R.id.selectDate);
         messageEditText = findViewById(R.id.message);
@@ -59,8 +68,17 @@ public class ReminderEditorActivity extends AppCompatActivity {
         reminder_id = cursor.getInt(0);
 
         messageEditText.setText(cursor.getString(1));
-        datetextview.setText(cursor.getString(2));
+        picturetextview.setText(cursor.getString(2));
+        datetextview.setText(cursor.getString(3));
+        reminder_time_textview = cursor.getString(3);
 
+
+        selectPicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                imageSelect();
+            }
+        });
 
         Calendar newCalender = Calendar.getInstance();
 
@@ -101,7 +119,7 @@ public class ReminderEditorActivity extends AppCompatActivity {
                                         minuteModified = "0" + minute;
                                     } else minuteModified = String.valueOf(minute);
 
-                                    reminder_time_textview = year + "-" + monthModified + "-" + dayOfMonthModified + " " + hourOfDayModified + ":" + minuteModified + ":00";
+                                    reminder_time_textview = year + "-" + monthModified + "-" + dayOfMonthModified + " " + hourOfDayModified + ":" + minuteModified;
                                     datetextview.setText(year + "-" + monthModified + "-" + dayOfMonthModified + "\n" + hourOfDayModified + ":" + minuteModified);
                                 }
                                 else Toast.makeText(ReminderEditorActivity.this, R.string.invalid_time, Toast.LENGTH_SHORT).show();
@@ -133,8 +151,48 @@ public class ReminderEditorActivity extends AppCompatActivity {
         });
     }
 
+
+    private void imageSelect() {
+        Intent intent;
+        if (Build.VERSION.SDK_INT < 19) {
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+        } else {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+        }
+        intent.setType("image/*");
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"),
+                RESULT_LOAD_IMG);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // Check which request we're responding to
+        if (requestCode == RESULT_LOAD_IMG) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                // The user picked a image.
+                // The Intent's data Uri identifies which item was selected.
+                if (data != null) {
+
+                    // This is the key line item, URI specifies the name of the data
+                    mImageUri = data.getData();
+
+                    // Removes Uri Permission so that when you restart the device, it will be allowed to reload.
+                    this.grantUriPermission(this.getPackageName(), mImageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    final int takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+                    this.getContentResolver().takePersistableUriPermission(mImageUri, takeFlags);
+
+                    picturetextview.setText(String.valueOf(mImageUri));
+                }
+            }
+        }
+    }
+
+
     private void processupdate(String message) {
-        myDB.updateReminder(reminder_id, message, reminder_time_textview);     //inserts the data into sql lite database
+        myDB.updateReminder(reminder_id, message, String.valueOf(picturetextview.getText()), reminder_time_textview);     //inserts the data into sql lite database
     }
 
     /**

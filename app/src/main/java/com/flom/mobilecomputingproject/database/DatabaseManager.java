@@ -16,11 +16,12 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     private Context context;
     private static final String DB_NAME = "Reminder";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
 
     private static final String TABLE_NAME = "myReminder";
     private static final String COLUMN_ID = "_id";
     private static final String COLUMN_MESSAGE = "message";
+    private static final String COLUMN_PICTURE = "picture";
     private static final String COLUMN_REMINDER_TIME = "reminder_time";
     private static final String COLUMN_CREATION_TIME = "creation_time";
 
@@ -34,6 +35,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         String query = "CREATE TABLE " + TABLE_NAME +
                 " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_MESSAGE + " TEXT, " +
+                COLUMN_PICTURE + " TEXT, " +
                 COLUMN_REMINDER_TIME + " DATETIME, " +
                 COLUMN_CREATION_TIME + " DATETIME);";
         sqLiteDatabase.execSQL(query);
@@ -73,15 +75,16 @@ public class DatabaseManager extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public void addReminder(String message, String reminder_time, String creation_time) {
+    public void addReminder(String message, String picture, String reminder_time, String creation_time) {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(COLUMN_MESSAGE, message);      //Inserts  data into sqllite database
+        contentValues.put(COLUMN_PICTURE, picture);
         contentValues.put(COLUMN_REMINDER_TIME, reminder_time);
         contentValues.put(COLUMN_CREATION_TIME, creation_time);
 
-        float result = database.insert(TABLE_NAME, null, contentValues);    //returns -1 if data successfully inserts into database
+        float result = database.insert(TABLE_NAME, null, contentValues);
 
         if (result == -1) {
             Toast.makeText(context, R.string.reminder_not_added, Toast.LENGTH_SHORT).show();
@@ -101,8 +104,8 @@ public class DatabaseManager extends SQLiteOpenHelper {
         database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + COLUMN_ID + " = " + id);
     }
 
-    public void updateReminder(int reminder_id, String message, String reminder_time_textview) {
+    public void updateReminder(int reminder_id, String message, String picture, String reminder_time_textview) {
         SQLiteDatabase database = this.getWritableDatabase();
-        database.execSQL("UPDATE " + TABLE_NAME + " SET " + COLUMN_MESSAGE + " = '" + message + "', " + COLUMN_REMINDER_TIME + " = '" + reminder_time_textview + "' WHERE " + COLUMN_ID + " = " + reminder_id);
+        database.execSQL("UPDATE " + TABLE_NAME + " SET " + COLUMN_MESSAGE + " = '" + message + "', " + COLUMN_PICTURE + " = '" + picture + "', " + COLUMN_REMINDER_TIME + " = '" + reminder_time_textview + "' WHERE " + COLUMN_ID + " = " + reminder_id);
     }
 }
