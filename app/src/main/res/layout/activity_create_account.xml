@@ -11,6 +11,7 @@
 
     <TextView
         android:id="@+id/tv_time_create_msg"
+        android:gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
