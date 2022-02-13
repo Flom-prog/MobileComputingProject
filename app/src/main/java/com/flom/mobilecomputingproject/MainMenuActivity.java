@@ -154,7 +154,7 @@ public class MainMenuActivity extends AppCompatActivity implements ReminderItemT
             snackbar.setAction(getString(R.string.undo), new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    SimpleDateFormat fmt = new SimpleDateFormat("EEEE dd LLLL yyyy --- HH:mm", Locale.getDefault());
+                    SimpleDateFormat fmt = new SimpleDateFormat("EEEE dd LLLL yyyy - HH:mm", Locale.getDefault());
                     Date date = null;
                     try {
                         date = fmt.parse(reminder_time);
@@ -268,7 +268,7 @@ public class MainMenuActivity extends AppCompatActivity implements ReminderItemT
                 e.printStackTrace();
             }
 
-            SimpleDateFormat fmtOut = new SimpleDateFormat("EEEE dd LLLL yyyy --- HH:mm", Locale.getDefault());
+            SimpleDateFormat fmtOut = new SimpleDateFormat("EEEE dd LLLL yyyy - HH:mm", Locale.getDefault());
             String reminder_time = fmtOut.format(date);
 
             Reminder reminder = new Reminder(cursor.getInt(0), cursor.getString(1), cursor.getString(2), reminder_time, cursor.getString(4));
