@@ -30,14 +30,21 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.work.Constraints;
+import androidx.work.Data;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.flom.mobilecomputingproject.database.DatabaseManager;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class AddReminderActivity extends AppCompatActivity {
 
@@ -233,10 +240,35 @@ public class AddReminderActivity extends AppCompatActivity {
                     datetextview.setText(R.string.add_date_before_validate);
                 } else if (message.isEmpty()) {
                     messageEditText.setError(getString(R.string.add_message_before_validate));
-                } else if (picture.isEmpty()) {
-                    picturetextview.setError(getString(R.string.add_picture_before_validate));
                 } else {
+                    if (picture.isEmpty()) picture = "";
+
                     processinsert(message, picture);
+
+                    Calendar currentDate = Calendar.getInstance();
+
+                    SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                    Date date = null;
+                    try {
+                        date = fmt.parse(reminder_time_textview);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    long timeDiff =  date.getTime() - currentDate.getTimeInMillis();
+
+                    Constraints constraints = new Constraints.Builder()
+                            .setRequiredNetworkType(NetworkType.CONNECTED)
+                            .build();
+
+                    OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class).setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
+                            .setConstraints(constraints)
+                            .setInputData(new Data.Builder().putString("IMAGE_URI", String.valueOf(mImageUri)).build())
+                            .addTag(message).build();
+
+                    WorkManager.getInstance().enqueue(oneTimeWorkRequest);
+
+
                     openMainMenu();
                 }
             }
