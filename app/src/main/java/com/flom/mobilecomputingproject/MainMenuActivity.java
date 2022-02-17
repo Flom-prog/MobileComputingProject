@@ -1,38 +1,37 @@
 package com.flom.mobilecomputingproject;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-        import androidx.recyclerview.widget.RecyclerView;
-
-        import android.app.AlertDialog;
+import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
-        import android.content.Intent;
-        import android.content.SharedPreferences;
-        import android.database.Cursor;
-        import android.os.Bundle;
-        import android.preference.PreferenceManager;
-import android.util.Log;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
-        import android.view.animation.AnimationUtils;
-        import android.view.animation.LayoutAnimationController;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.flom.mobilecomputingproject.controller.RecyclerViewAdapter;
 import com.flom.mobilecomputingproject.controller.ReminderItemTouchHelper;
 import com.flom.mobilecomputingproject.database.DatabaseManager;
-        import com.flom.mobilecomputingproject.controller.RecyclerViewAdapter;
-        import com.flom.mobilecomputingproject.model.Reminder;
-        import com.flom.mobilecomputingproject.model.ReminderEnum;
-        import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.flom.mobilecomputingproject.model.Reminder;
+import com.flom.mobilecomputingproject.model.ReminderEnum;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -168,6 +167,9 @@ public class MainMenuActivity extends AppCompatActivity implements ReminderItemT
 
             // remove the item from recycler view
             myDB.deleteReminder(idOfItemRemoved);
+            NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.cancel(idOfItemRemoved);
+
             reloadAll();
 
             // showing snack bar with Undo option

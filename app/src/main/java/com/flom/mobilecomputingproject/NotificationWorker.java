@@ -3,15 +3,18 @@ package com.flom.mobilecomputingproject;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -24,8 +27,6 @@ import com.flom.mobilecomputingproject.database.DatabaseManager;
 import java.io.IOException;
 
 public class NotificationWorker extends Worker {
-
-    private DatabaseManager myDB;
 
     public NotificationWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -40,7 +41,7 @@ public class NotificationWorker extends Worker {
     }
 
     private void displayNotification(String title, String imageUri, int reminder_id, boolean show_notification) {
-        myDB = new DatabaseManager(getApplicationContext());
+        DatabaseManager myDB = new DatabaseManager(getApplicationContext());
         myDB.updateReminderSeen(reminder_id, "true");
 
         if (show_notification) {
@@ -55,45 +56,40 @@ public class NotificationWorker extends Worker {
                 manager.createNotificationChannel(channel);
             }
 
-            Bitmap bitmap = null;
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.parse(imageUri));
-            } catch (IOException e) {
-                e.printStackTrace();
+            NotificationCompat.Builder builder;
+
+            if (imageUri.equals("")) {
+                builder = new NotificationCompat.Builder(getApplicationContext(), "notification")
+                        .setContentTitle(title)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentIntent(pendingIntent)
+                        .setGroup("notification")
+                        .setLights(getApplicationContext().getResources().getColor(R.color.red), 300, 1000)
+                        .setVibrate(new long[]{0, 100, 100, 100})
+                        //.setSound(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE+ "://" + getApplicationContext().getPackageName() + "/" + R.raw.notification))
+                        //.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                        .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+                        .setAutoCancel(true);
+            } else {
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.parse(imageUri));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                builder = new NotificationCompat.Builder(getApplicationContext(), "notification")
+                        .setContentTitle(title)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setLargeIcon(bitmap)
+                        .setContentIntent(pendingIntent)
+                        .setGroup("notification")
+                        .setSound(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE+ "://" + getApplicationContext().getPackageName() + "/" + R.raw.notification))
+                        .setAutoCancel(true);
             }
 
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "notification")
-                    .setContentTitle(title)
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    //.setLargeIcon(drawableToBitmap(getApplicationContext().getDrawable(R.drawable.logo)))
-                    .setLargeIcon(bitmap)
-                    .setContentIntent(pendingIntent)
-                    .setGroup("notification")
-                    .setAutoCancel(true);
 
-            manager.notify(1, builder.build());
+            manager.notify(reminder_id, builder.build());
         }
-    }
-
-    public static Bitmap drawableToBitmap(Drawable drawable) {
-        Bitmap bitmap = null;
-
-        if (drawable instanceof BitmapDrawable) {
-            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
-            if(bitmapDrawable.getBitmap() != null) {
-                return bitmapDrawable.getBitmap();
-            }
-        }
-
-        if(drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
-            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
-        } else {
-            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        }
-
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-        return bitmap;
     }
 }
