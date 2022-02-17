@@ -60,4 +60,6 @@
     <string name="delete">Delete</string>
     <string name="add_picture_before_validate">You must add a picture before validating</string>
     <string name="created_on">"Created on : "</string>
+    <string name="add_notification">Add a notification ?</string>
+    <string name="show_all_reminders">Show all reminders</string>
 </resources>

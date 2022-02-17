@@ -104,6 +104,12 @@
                 android:textSize="12sp"
                 android:textStyle="italic" />
 
+            <TextView
+                android:id="@+id/reminder_seen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
         </LinearLayout>
 
     </RelativeLayout>

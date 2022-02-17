@@ -16,8 +16,10 @@ import android.util.Log;
 import android.view.View;
         import android.view.animation.AnimationUtils;
         import android.view.animation.LayoutAnimationController;
-        import android.widget.ImageButton;
-        import android.widget.TextView;
+import android.widget.CompoundButton;
+import android.widget.ImageButton;
+import android.widget.Switch;
+import android.widget.TextView;
 
 import com.flom.mobilecomputingproject.controller.ReminderItemTouchHelper;
 import com.flom.mobilecomputingproject.database.DatabaseManager;
@@ -32,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -56,6 +59,11 @@ public class MainMenuActivity extends AppCompatActivity implements ReminderItemT
 
     private int idOfItemRemoved;
 
+    private String reminder_seen;
+
+    private Switch switch_show_all_reminders;
+    private boolean see_all_reminders;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +84,18 @@ public class MainMenuActivity extends AppCompatActivity implements ReminderItemT
         remindersCounter = findViewById(R.id.reminders_counter);
         noReminderHint = findViewById(R.id.no_reminders_hint);
         reminders_text_view = findViewById(R.id.reminders_text_view);
+
+
+        switch_show_all_reminders = findViewById(R.id.switch_show_all_reminders);
+        see_all_reminders = false;
+
+        switch_show_all_reminders.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                see_all_reminders = isChecked;
+                reloadAll();
+            }
+        });
+
 
         reminderEnums = ReminderEnum.values();
 
@@ -144,6 +164,7 @@ public class MainMenuActivity extends AppCompatActivity implements ReminderItemT
             String picture = dataholder.get(position).getImage_reminder();
             String reminder_time = dataholder.get(position).getReminder_time();
             String creation_time = dataholder.get(position).getCreation_time();
+            reminder_seen = dataholder.get(position).getReminder_seen();
 
             // remove the item from recycler view
             myDB.deleteReminder(idOfItemRemoved);
@@ -165,8 +186,13 @@ public class MainMenuActivity extends AppCompatActivity implements ReminderItemT
                     SimpleDateFormat fmtOut = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                     String new_reminder_time = fmtOut.format(date);
 
+                    Calendar currentDate = Calendar.getInstance();
+                    long timeDiff =  date.getTime() - currentDate.getTimeInMillis();
+                    if (timeDiff <= 0) reminder_seen = "true";
+                    else reminder_seen = "false";
+
                     // undo is selected, restore the deleted item
-                    myDB.addReminder(message, picture, new_reminder_time, creation_time);
+                    myDB.addReminder(message, picture, new_reminder_time, creation_time, reminder_seen);
                     reloadAll();
                 }
             });
@@ -257,7 +283,7 @@ public class MainMenuActivity extends AppCompatActivity implements ReminderItemT
     public void storeDataInArray() {
         dataholder.clear();
 
-        Cursor cursor = myDB.readAllReminders(reminderEnums[preferences.getInt("ReminderDisplayMode", 0)].toString(), preferences.getString("ReminderDisplayOrder", "ASC"));
+        Cursor cursor = myDB.readAllReminders(reminderEnums[preferences.getInt("ReminderDisplayMode", 0)].toString(), preferences.getString("ReminderDisplayOrder", "ASC"), see_all_reminders);
 
         while (cursor.moveToNext()) {
             SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -271,7 +297,7 @@ public class MainMenuActivity extends AppCompatActivity implements ReminderItemT
             SimpleDateFormat fmtOut = new SimpleDateFormat("EEEE dd LLLL yyyy - HH:mm", Locale.getDefault());
             String reminder_time = fmtOut.format(date);
 
-            Reminder reminder = new Reminder(cursor.getInt(0), cursor.getString(1), cursor.getString(2), reminder_time, cursor.getString(4));
+            Reminder reminder = new Reminder(cursor.getInt(0), cursor.getString(1), cursor.getString(2), reminder_time, cursor.getString(4), cursor.getString(5));
             dataholder.add(reminder);
         }
     }

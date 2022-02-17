@@ -16,7 +16,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     private Context context;
     private static final String DB_NAME = "Reminder";
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 3;
 
     private static final String TABLE_NAME = "myReminder";
     private static final String COLUMN_ID = "_id";
@@ -24,6 +24,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
     private static final String COLUMN_PICTURE = "picture";
     private static final String COLUMN_REMINDER_TIME = "reminder_time";
     private static final String COLUMN_CREATION_TIME = "creation_time";
+    private static final String COLUMN_REMINDER_SEEN = "reminder_seen";
 
     public DatabaseManager(@Nullable Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -37,7 +38,8 @@ public class DatabaseManager extends SQLiteOpenHelper {
                 COLUMN_MESSAGE + " TEXT, " +
                 COLUMN_PICTURE + " TEXT, " +
                 COLUMN_REMINDER_TIME + " DATETIME, " +
-                COLUMN_CREATION_TIME + " DATETIME);";
+                COLUMN_CREATION_TIME + " DATETIME, " +
+                COLUMN_REMINDER_SEEN + " TEXT);";
         sqLiteDatabase.execSQL(query);
     }
 
@@ -47,13 +49,13 @@ public class DatabaseManager extends SQLiteOpenHelper {
         onCreate(sqLiteDatabase);
     }
 
-    public Cursor readAllReminders(String filter, String order) {
+    public Cursor readAllReminders(String filter, String order, boolean see_all_reminders) {
         SQLiteDatabase database = this.getReadableDatabase();
 
         String query;
 
-        if (filter.equals(COLUMN_REMINDER_TIME) || filter.equals(COLUMN_CREATION_TIME)) query = "SELECT * FROM " + TABLE_NAME + " ORDER BY DATETIME(" + filter + ") " + order;   //Sql query to  retrieve  data from the database
-        else query = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + filter + " " + order;
+        if (see_all_reminders) query = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + filter + " " + order;   //Sql query to  retrieve  data from the database
+        else query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_REMINDER_SEEN + " = 'true' ORDER BY " + filter + " " + order;
 
         Cursor cursor = null;
         if (database != null) {
@@ -75,7 +77,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public void addReminder(String message, String picture, String reminder_time, String creation_time) {
+    public int addReminder(String message, String picture, String reminder_time, String creation_time, String reminder_seen) {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
@@ -83,6 +85,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         contentValues.put(COLUMN_PICTURE, picture);
         contentValues.put(COLUMN_REMINDER_TIME, reminder_time);
         contentValues.put(COLUMN_CREATION_TIME, creation_time);
+        contentValues.put(COLUMN_REMINDER_SEEN, reminder_seen);
 
         float result = database.insert(TABLE_NAME, null, contentValues);
 
@@ -91,6 +94,8 @@ public class DatabaseManager extends SQLiteOpenHelper {
         } else {
             Toast.makeText(context, R.string.reminder_added, Toast.LENGTH_SHORT).show();
         }
+
+        return (int) result;
     }
 
     public void deleteAllReminders() {
@@ -104,8 +109,13 @@ public class DatabaseManager extends SQLiteOpenHelper {
         database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + COLUMN_ID + " = " + id);
     }
 
-    public void updateReminder(int reminder_id, String message, String picture, String reminder_time_textview) {
+    public void updateReminder(int reminder_id, String message, String picture, String reminder_time_textview, String reminder_seen) {
         SQLiteDatabase database = this.getWritableDatabase();
-        database.execSQL("UPDATE " + TABLE_NAME + " SET " + COLUMN_MESSAGE + " = '" + message + "', " + COLUMN_PICTURE + " = '" + picture + "', " + COLUMN_REMINDER_TIME + " = '" + reminder_time_textview + "' WHERE " + COLUMN_ID + " = " + reminder_id);
+        database.execSQL("UPDATE " + TABLE_NAME + " SET " + COLUMN_MESSAGE + " = '" + message + "', " + COLUMN_PICTURE + " = '" + picture + "', " + COLUMN_REMINDER_TIME + " = '" + reminder_time_textview + "', " + COLUMN_REMINDER_SEEN + " = '" + reminder_seen + "' WHERE " + COLUMN_ID + " = " + reminder_id);
+    }
+
+    public void updateReminderSeen(int reminder_id, String reminder_seen) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.execSQL("UPDATE " + TABLE_NAME + " SET " + COLUMN_REMINDER_SEEN + " = '" + reminder_seen + "' WHERE " + COLUMN_ID + " = " + reminder_id);
     }
 }

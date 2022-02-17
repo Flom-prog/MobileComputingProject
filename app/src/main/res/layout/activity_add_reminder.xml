@@ -101,6 +101,15 @@
 
         </LinearLayout>
 
+        <Switch
+            android:id="@+id/switch_add_notification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_notification"
+            android:layout_marginTop="10dp"
+            android:paddingLeft="10dp"
+            android:textColor="@color/grey_200"/>
+
 
         <Button
             android:id="@+id/addButton"

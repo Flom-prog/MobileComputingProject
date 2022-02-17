@@ -18,10 +18,12 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -68,6 +70,11 @@ public class AddReminderActivity extends AppCompatActivity {
     private Boolean isDateSet;
 
     private String reminder_time_textview;
+
+    private int reminder_id;
+
+    private Switch switch_add_notification;
+    private boolean add_notification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,6 +166,17 @@ public class AddReminderActivity extends AppCompatActivity {
         selectDate = findViewById(R.id.selectDate);
         submit = findViewById(R.id.addButton);
 
+        switch_add_notification = findViewById(R.id.switch_add_notification);
+
+        add_notification = true;
+        switch_add_notification.setChecked(true);
+
+        switch_add_notification.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                add_notification = isChecked;
+            }
+        });
+
 
         selectPicture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,8 +193,6 @@ public class AddReminderActivity extends AppCompatActivity {
         selectDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isDateSet = true;
-
                 DatePickerDialog dialog = new DatePickerDialog(AddReminderActivity.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, final int year, final int month, final int dayOfMonth) {
@@ -211,6 +227,7 @@ public class AddReminderActivity extends AppCompatActivity {
                                         minuteModified = "0" + minute;
                                     } else minuteModified = String.valueOf(minute);
 
+                                    isDateSet = true;
                                     reminder_time_textview = year + "-" + monthModified + "-" + dayOfMonthModified + " " + hourOfDayModified + ":" + minuteModified;
                                     datetextview.setText(year + "-" + monthModified + "-" + dayOfMonthModified + "\n" + hourOfDayModified + ":" + minuteModified);
                                 }
@@ -243,8 +260,6 @@ public class AddReminderActivity extends AppCompatActivity {
                 } else {
                     if (picture.isEmpty()) picture = "";
 
-                    processinsert(message, picture);
-
                     Calendar currentDate = Calendar.getInstance();
 
                     SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -255,7 +270,13 @@ public class AddReminderActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-                    long timeDiff =  date.getTime() - currentDate.getTimeInMillis();
+                    long timeDiff = date.getTime() - currentDate.getTimeInMillis();
+
+                    String reminder_seen;
+                    if (timeDiff <= 0) reminder_seen = "true";
+                    else reminder_seen = "false";
+
+                    processinsert(message, picture, reminder_seen);
 
                     Constraints constraints = new Constraints.Builder()
                             .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -263,11 +284,14 @@ public class AddReminderActivity extends AppCompatActivity {
 
                     OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class).setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
                             .setConstraints(constraints)
-                            .setInputData(new Data.Builder().putString("IMAGE_URI", String.valueOf(mImageUri)).build())
+                            .setInputData(new Data.Builder()
+                                    .putString("IMAGE_URI", String.valueOf(mImageUri))
+                                    .putInt("ID", reminder_id)
+                                    .putBoolean("SHOW_NOTIFICATION", add_notification)
+                                    .build())
                             .addTag(message).build();
 
                     WorkManager.getInstance().enqueue(oneTimeWorkRequest);
-
 
                     openMainMenu();
                 }
@@ -336,12 +360,12 @@ public class AddReminderActivity extends AppCompatActivity {
     }
 
 
-    private void processinsert(String message, String picture) {
+    private void processinsert(String message, String picture, String reminder_seen) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
         String creation_time = sdf.format(new Date());
 
         DatabaseManager myDB = new DatabaseManager(AddReminderActivity.this);
-        myDB.addReminder(message, picture, reminder_time_textview, getString(R.string.created_on) + creation_time);     //inserts the data into sql lite database
+        reminder_id = myDB.addReminder(message, picture, reminder_time_textview, getString(R.string.created_on) + creation_time, reminder_seen);     //inserts the data into sql lite database
 
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt("TotalNumberOfReminders", preferences.getInt("TotalNumberOfReminders", 0) + 1);

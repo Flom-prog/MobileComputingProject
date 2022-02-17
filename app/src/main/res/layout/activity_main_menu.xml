@@ -162,18 +162,31 @@ tools:context=".MainMenuActivity"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <Switch
+                android:id="@+id/switch_show_all_reminders"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/show_all_reminders"
+                android:paddingLeft="10dp"
+                android:textColor="@color/grey_200"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
             <TextView
                 android:id="@+id/no_reminders_hint"
                 android:layout_width="0dp"
+                android:textColor="@color/white"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:layout_marginTop="10dp"
                 android:padding="10dp"
                 android:text="@string/there_are_currently_no_reminders"
                 android:textSize="18sp"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/switch_show_all_reminders" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerview"

@@ -1,6 +1,11 @@
 package com.flom.mobilecomputingproject;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.work.Constraints;
+import androidx.work.Data;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -25,10 +30,12 @@ import android.widget.Toast;
 import com.flom.mobilecomputingproject.database.DatabaseManager;
 import com.flom.mobilecomputingproject.model.Reminder;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class ReminderEditorActivity extends AppCompatActivity {
 
@@ -47,6 +54,9 @@ public class ReminderEditorActivity extends AppCompatActivity {
     private String reminder_time_textview;
 
     private DatabaseManager myDB;
+
+
+    private Boolean isDateSet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +89,8 @@ public class ReminderEditorActivity extends AppCompatActivity {
                 imageSelect();
             }
         });
+
+        isDateSet = false;
 
         Calendar newCalender = Calendar.getInstance();
 
@@ -119,6 +131,7 @@ public class ReminderEditorActivity extends AppCompatActivity {
                                         minuteModified = "0" + minute;
                                     } else minuteModified = String.valueOf(minute);
 
+                                    isDateSet = true;
                                     reminder_time_textview = year + "-" + monthModified + "-" + dayOfMonthModified + " " + hourOfDayModified + ":" + minuteModified;
                                     datetextview.setText(year + "-" + monthModified + "-" + dayOfMonthModified + "\n" + hourOfDayModified + ":" + minuteModified);
                                 }
@@ -140,11 +153,35 @@ public class ReminderEditorActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String message = messageEditText.getText().toString().trim();
+                String picture = picturetextview.getText().toString().trim();
 
-                if (message.isEmpty()) {
+                if (!isDateSet) {
+                    datetextview.setError("");
+                    datetextview.setTextColor(Color.RED);
+                    datetextview.setText(R.string.add_date_before_validate);
+                } else if (message.isEmpty()) {
                     messageEditText.setError(getString(R.string.add_message_before_validate));
                 } else {
-                    processupdate(message);
+                    if (picture.isEmpty()) picture = "";
+
+                    Calendar currentDate = Calendar.getInstance();
+
+                    SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                    Date date = null;
+                    try {
+                        date = fmt.parse(reminder_time_textview);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    long timeDiff =  date.getTime() - currentDate.getTimeInMillis();
+
+                    String reminder_seen;
+                    if (timeDiff <= 0) reminder_seen = "true";
+                    else reminder_seen = "false";
+
+                    processupdate(message, picture, reminder_seen);
+
                     openMainMenu();
                 }
             }
@@ -191,8 +228,8 @@ public class ReminderEditorActivity extends AppCompatActivity {
     }
 
 
-    private void processupdate(String message) {
-        myDB.updateReminder(reminder_id, message, String.valueOf(picturetextview.getText()), reminder_time_textview);     //inserts the data into sql lite database
+    private void processupdate(String message, String picture, String reminder_seen) {
+        myDB.updateReminder(reminder_id, message, picture, reminder_time_textview, reminder_seen);     //inserts the data into sql lite database
     }
 
     /**

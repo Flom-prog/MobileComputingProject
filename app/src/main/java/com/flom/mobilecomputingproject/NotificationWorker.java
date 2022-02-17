@@ -12,15 +12,20 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.flom.mobilecomputingproject.database.DatabaseManager;
+
 import java.io.IOException;
 
 public class NotificationWorker extends Worker {
+
+    private DatabaseManager myDB;
 
     public NotificationWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -30,39 +35,44 @@ public class NotificationWorker extends Worker {
     @Override
     public Result doWork() {
         String[] array = getTags().toArray(new String[0]);
-        displayNotification(array[1], getInputData().getString("IMAGE_URI"));
+        displayNotification(array[1], getInputData().getString("IMAGE_URI"), getInputData().getInt("ID", 0), getInputData().getBoolean("SHOW_NOTIFICATION", true));
         return Result.success();
     }
 
-    private void displayNotification(String title, String imageUri) {
-        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    private void displayNotification(String title, String imageUri, int reminder_id, boolean show_notification) {
+        myDB = new DatabaseManager(getApplicationContext());
+        myDB.updateReminderSeen(reminder_id, "true");
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 1, intent, PendingIntent.FLAG_ONE_SHOT);
-        NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        if (show_notification) {
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("notification", "notification", NotificationManager.IMPORTANCE_DEFAULT);
-            manager.createNotificationChannel(channel);
+            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 1, intent, PendingIntent.FLAG_ONE_SHOT);
+            NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel channel = new NotificationChannel("notification", "notification", NotificationManager.IMPORTANCE_DEFAULT);
+                manager.createNotificationChannel(channel);
+            }
+
+            Bitmap bitmap = null;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.parse(imageUri));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "notification")
+                    .setContentTitle(title)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    //.setLargeIcon(drawableToBitmap(getApplicationContext().getDrawable(R.drawable.logo)))
+                    .setLargeIcon(bitmap)
+                    .setContentIntent(pendingIntent)
+                    .setGroup("notification")
+                    .setAutoCancel(true);
+
+            manager.notify(1, builder.build());
         }
-
-        Bitmap bitmap = null;
-        try {
-            bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.parse(imageUri));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "notification")
-                .setContentTitle(title)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                //.setLargeIcon(drawableToBitmap(getApplicationContext().getDrawable(R.drawable.logo)))
-                .setLargeIcon(bitmap)
-                .setContentIntent(pendingIntent)
-                .setGroup("notification")
-                .setAutoCancel(true);
-
-        manager.notify(1, builder.build());
     }
 
     public static Bitmap drawableToBitmap(Drawable drawable) {

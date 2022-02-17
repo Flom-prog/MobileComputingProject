@@ -5,20 +5,21 @@ public class Reminder {
     private int reminder_id, creator_id;
     private String message, image_reminder, reminder_time, creation_time;
     private double location_x, location_y;
-    private boolean reminder_seen;
+    private String reminder_seen;
 
     public Reminder() {
     }
 
-    public Reminder(int reminder_id, String message, String image_reminder, String reminder_time, String creation_time) {
+    public Reminder(int reminder_id, String message, String image_reminder, String reminder_time, String creation_time, String reminder_seen) {
         this.reminder_id = reminder_id;
         this.message = message;
         this.image_reminder = image_reminder;
         this.reminder_time = reminder_time;
         this.creation_time = creation_time;
+        this.reminder_seen = reminder_seen;
     }
 
-    public Reminder(int creator_id, String message, String reminder_time, String creation_time, double location_x, double location_y, boolean reminder_seen) {
+    public Reminder(int creator_id, String message, String reminder_time, String creation_time, double location_x, double location_y, String reminder_seen) {
         this.creator_id = creator_id;
         this.message = message;
         this.reminder_time = reminder_time;
@@ -92,11 +93,11 @@ public class Reminder {
         this.location_y = location_y;
     }
 
-    public boolean isReminder_seen() {
+    public String getReminder_seen() {
         return reminder_seen;
     }
 
-    public void setReminder_seen(boolean reminder_seen) {
+    public void setReminder_seen(String reminder_seen) {
         this.reminder_seen = reminder_seen;
     }
 }
