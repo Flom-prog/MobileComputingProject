@@ -53,6 +53,8 @@ public class NotificationWorker extends Worker {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 NotificationChannel channel = new NotificationChannel("notification", "notification", NotificationManager.IMPORTANCE_DEFAULT);
+                channel.enableLights(true);
+                channel.enableVibration(true);
                 manager.createNotificationChannel(channel);
             }
 
@@ -66,9 +68,10 @@ public class NotificationWorker extends Worker {
                         .setGroup("notification")
                         .setLights(getApplicationContext().getResources().getColor(R.color.red), 300, 1000)
                         .setVibrate(new long[]{0, 100, 100, 100})
-                        //.setSound(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE+ "://" + getApplicationContext().getPackageName() + "/" + R.raw.notification))
+                        .setSound(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE+ "://" + getApplicationContext().getPackageName() + "/" + R.raw.notification))
                         //.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                        .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+                        //.setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+                        .setStyle(new NotificationCompat.BigTextStyle().setBigContentTitle(title))
                         .setAutoCancel(true);
             } else {
                 Bitmap bitmap = null;
@@ -81,10 +84,14 @@ public class NotificationWorker extends Worker {
                 builder = new NotificationCompat.Builder(getApplicationContext(), "notification")
                         .setContentTitle(title)
                         .setSmallIcon(R.mipmap.ic_launcher)
-                        .setLargeIcon(bitmap)
                         .setContentIntent(pendingIntent)
                         .setGroup("notification")
+                        .setLights(getApplicationContext().getResources().getColor(R.color.red), 300, 1000)
+                        .setVibrate(new long[]{0, 100, 100, 100})
                         .setSound(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE+ "://" + getApplicationContext().getPackageName() + "/" + R.raw.notification))
+                        //.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                        //.setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+                        .setStyle(new NotificationCompat.BigTextStyle().setBigContentTitle(title))
                         .setAutoCancel(true);
             }
 

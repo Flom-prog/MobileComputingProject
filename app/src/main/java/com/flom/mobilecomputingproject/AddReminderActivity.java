@@ -36,6 +36,7 @@ import androidx.work.Constraints;
 import androidx.work.Data;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import com.flom.mobilecomputingproject.database.DatabaseManager;
@@ -73,8 +74,8 @@ public class AddReminderActivity extends AppCompatActivity {
 
     private int reminder_id;
 
-    private Switch switch_add_notification;
-    private boolean add_notification;
+    private Switch switch_add_notification, every_day_notification;
+    private boolean add_notification, every_day;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,6 +175,18 @@ public class AddReminderActivity extends AppCompatActivity {
         switch_add_notification.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 add_notification = isChecked;
+            }
+        });
+
+
+        every_day_notification = findViewById(R.id.every_day_notification);
+
+        every_day = false;
+        every_day_notification.setChecked(false);
+
+        every_day_notification.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                every_day = isChecked;
             }
         });
 
@@ -278,20 +291,28 @@ public class AddReminderActivity extends AppCompatActivity {
 
                     processinsert(message, picture, reminder_seen);
 
-                    Constraints constraints = new Constraints.Builder()
-                            .setRequiredNetworkType(NetworkType.CONNECTED)
-                            .build();
 
-                    OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class).setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
-                            .setConstraints(constraints)
-                            .setInputData(new Data.Builder()
-                                    .putString("IMAGE_URI", String.valueOf(mImageUri))
-                                    .putInt("ID", reminder_id)
-                                    .putBoolean("SHOW_NOTIFICATION", add_notification)
-                                    .build())
-                            .addTag(message).build();
+                    if (every_day) {
+                        PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(NotificationWorker.class, 24, TimeUnit.HOURS).build();
 
-                    WorkManager.getInstance().enqueue(oneTimeWorkRequest);
+                        WorkManager.getInstance().enqueue(periodicWorkRequest);
+                    } else {
+                        Constraints constraints = new Constraints.Builder()
+                                .setRequiredNetworkType(NetworkType.CONNECTED)
+                                .build();
+
+                        OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class).setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
+                                .setConstraints(constraints)
+                                .setInputData(new Data.Builder()
+                                        .putString("IMAGE_URI", String.valueOf(mImageUri))
+                                        .putInt("ID", reminder_id)
+                                        .putBoolean("SHOW_NOTIFICATION", add_notification)
+                                        .build())
+                                .addTag(message).build();
+
+                        WorkManager.getInstance().enqueue(oneTimeWorkRequest);
+                    }
+
 
                     openMainMenu();
                 }
