@@ -297,12 +297,7 @@ public class AddReminderActivity extends AppCompatActivity {
 
                         WorkManager.getInstance().enqueue(periodicWorkRequest);
                     } else {
-                        Constraints constraints = new Constraints.Builder()
-                                .setRequiredNetworkType(NetworkType.CONNECTED)
-                                .build();
-
                         OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class).setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
-                                .setConstraints(constraints)
                                 .setInputData(new Data.Builder()
                                         .putString("IMAGE_URI", String.valueOf(mImageUri))
                                         .putInt("ID", reminder_id)
