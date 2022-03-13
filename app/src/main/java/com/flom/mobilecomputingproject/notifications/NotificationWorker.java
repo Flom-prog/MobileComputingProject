@@ -1,4 +1,4 @@
-package com.flom.mobilecomputingproject;
+package com.flom.mobilecomputingproject.notifications;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -22,6 +22,8 @@ import androidx.core.app.NotificationCompat;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.flom.mobilecomputingproject.LoginActivity;
+import com.flom.mobilecomputingproject.R;
 import com.flom.mobilecomputingproject.database.DatabaseManager;
 
 import java.io.IOException;
@@ -36,7 +38,7 @@ public class NotificationWorker extends Worker {
     @Override
     public Result doWork() {
         String[] array = getTags().toArray(new String[0]);
-        displayNotification(array[1], getInputData().getString("IMAGE_URI"), getInputData().getInt("ID", 0), getInputData().getBoolean("SHOW_NOTIFICATION", true));
+        displayNotification(array[0], getInputData().getString("IMAGE_URI"), getInputData().getInt("ID", 0), getInputData().getBoolean("SHOW_NOTIFICATION", true));
         return Result.success();
     }
 

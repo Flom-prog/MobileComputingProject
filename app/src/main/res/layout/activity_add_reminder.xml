@@ -88,6 +88,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:hint="@string/message"
+                android:inputType="text"
                 android:textColor="@color/black" />
 
 
@@ -98,6 +99,39 @@
                 android:layout_height="40dp"
                 android:background="@drawable/app_res_bg_reminder_date"
                 android:src="@drawable/ic_keyboard_voice_white_24" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:layout_marginTop="30dp">
+
+
+            <EditText
+                android:id="@+id/ET_location_x"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:hint="X"
+                android:inputType="numberDecimal"
+                android:textColor="@color/black" />
+
+
+            <EditText
+                android:id="@+id/ET_location_y"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:hint="Y"
+                android:inputType="numberDecimal"
+                android:textColor="@color/black" />
 
         </LinearLayout>
 

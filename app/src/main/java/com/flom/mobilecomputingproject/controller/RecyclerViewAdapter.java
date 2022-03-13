@@ -46,11 +46,37 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         holder.message.setText(dataholder.get(position).getMessage());     //Binds the single reminder objects to recycler view
         holder.picture.setImageURI(Uri.parse(dataholder.get(position).getImage_reminder()));
-        holder.reminder_time.setText(dataholder.get(position).getReminder_time());
-        holder.creation_time.setText(dataholder.get(position).getCreation_time());
+        holder.creation_time.setText(holder.itemView.getResources().getString(R.string.created_on) + dataholder.get(position).getCreation_time());
         holder.reminder_seen.setText(dataholder.get(position).getReminder_seen());
 
-        if (dataholder.get(position).getReminder_seen().equals("false")) holder.reminder_time.setTextColor(holder.itemView.getResources().getColor(R.color.red));
+
+
+
+        if (dataholder.get(position).getReminder_time().isEmpty()) {
+            holder.location_x.setVisibility(View.VISIBLE);
+            holder.location_y.setVisibility(View.VISIBLE);
+            holder.space.setVisibility(View.VISIBLE);
+            holder.location_x.setText(String.valueOf(dataholder.get(position).getLocation_x()));
+            holder.location_y.setText(String.valueOf(dataholder.get(position).getLocation_y()));
+
+            holder.reminder_time.setVisibility(View.GONE);
+        } else {
+            holder.reminder_time.setVisibility(View.VISIBLE);
+            holder.reminder_time.setText(dataholder.get(position).getReminder_time());
+
+            holder.space.setVisibility(View.GONE);
+            holder.location_x.setVisibility(View.GONE);
+            holder.location_y.setVisibility(View.GONE);
+        }
+
+
+
+
+        if (dataholder.get(position).getReminder_seen().equals("false")) {
+            holder.reminder_time.setTextColor(holder.itemView.getResources().getColor(R.color.red));
+            holder.location_x.setTextColor(holder.itemView.getResources().getColor(R.color.red));
+            holder.location_y.setTextColor(holder.itemView.getResources().getColor(R.color.red));
+        }
 
         holder.reminder_layout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,7 +99,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public View reminder_layout, viewBackground;
-        private TextView txtReminderId, message, reminder_time, creation_time, reminder_seen;
+        private TextView txtReminderId, message, reminder_time, creation_time, reminder_seen, location_x, location_y, space;
         private ImageView picture;
 
         public ViewHolder(@NonNull View itemview) {
@@ -88,6 +114,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             reminder_time = itemview.findViewById(R.id.txtReminder_time);
             creation_time = itemview.findViewById(R.id.txtCreation_time);
             reminder_seen = itemview.findViewById(R.id.reminder_seen);
+
+
+
+
+            space = itemview.findViewById(R.id.space);
+            location_x = itemview.findViewById(R.id.location_x);
+            location_y = itemview.findViewById(R.id.location_y);
         }
     }
 }

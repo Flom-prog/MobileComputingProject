@@ -52,7 +52,7 @@
     <string name="sure_exit_before_save">Are you sure you want to leave without registering?</string>
     <string name="delete_account">Delete my account</string>
     <string name="log_out">Log out</string>
-    <string name="add_date_before_validate">You must add a date before validating</string>
+    <string name="add_date_before_validate">You must add a date or a location before validating</string>
     <string name="add_message_before_validate">You must add a message before validating</string>
     <string name="no_data_to_update">No data to update</string>
     <string name="return_to_loginmenu">You will be logged out and then returned to the login screen</string>
@@ -68,4 +68,15 @@
     <string name="add_notification">Add a notification ?</string>
     <string name="show_all_reminders">Show all reminders</string>
     <string name="every_day_notification">Every day</string>
+    <string name="title_activity_maps" translatable="false">MapsActivity</string>
+
+    <string name="geofence_unknown_error">Unknown error: the Geofence service is not available now.</string>
+    <string name="geofence_not_available">Geofence service is not available now. Go to Settings>Location>Mode and choose High accuracy.</string>
+    <string name="geofence_too_many_geofences">Your app has registered too many geofences.</string>
+    <string name="geofence_too_many_pending_intents">You have provided too many PendingIntents to the addGeofences() call.</string>
+    <string name="geofence_transition_invalid_type">Geofence transition error: invalid transition type %1$d</string>
+    <string name="geofence_transition_entered">Entered</string>
+    <string name="geofence_transition_exited">Exited</string>
+    <string name="unknown_geofence_transition">Unknown Transition</string>
+    <string name="geofence_transition_notification_text">Click notification to return to app</string>
 </resources>

@@ -56,6 +56,10 @@ public class LoginActivity extends AppCompatActivity {
     private BiometricPrompt.PromptInfo promptInfo;
     private Executor executor;
 
+
+    private String myLanguage = "en";
+    private ImageButton language;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +73,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this); //Initializes the SharedPreferences
+
+        language = findViewById(R.id.language);
 
 
         constraintLayout = findViewById(R.id.containerlogin);
@@ -162,6 +168,45 @@ public class LoginActivity extends AppCompatActivity {
                 biometricPrompt.authenticate(promptInfo);
             }
         });
+
+
+
+
+        Resources res = getResources();
+        Configuration conf = res.getConfiguration();
+        setLocale(conf.locale.toString().split("_")[0], false);
+
+        language.setOnClickListener(view -> {
+            if (myLanguage.equals("fr")) setLocale("en", true);
+            else setLocale("fr", true);
+        });
+    }
+
+
+    public void setLocale(String lang, boolean reload) {
+        switch (lang) {
+            case "fr":
+                language.setBackgroundResource(R.drawable.fr);
+                break;
+            case "en":
+                language.setBackgroundResource(R.drawable.en);
+                break;
+        }
+        myLanguage = lang;
+
+        if (reload) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("language", lang);
+            editor.apply();
+            Resources res = getResources();
+            DisplayMetrics dm = res.getDisplayMetrics();
+            Configuration conf = res.getConfiguration();
+            conf.locale = new Locale(lang);
+            res.updateConfiguration(conf, dm);
+            Intent refresh = new Intent(this, LoginActivity.class);
+            finish();
+            startActivity(refresh);
+        }
     }
 
 

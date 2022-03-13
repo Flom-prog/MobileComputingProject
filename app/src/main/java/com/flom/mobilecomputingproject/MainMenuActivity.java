@@ -47,7 +47,7 @@ public class MainMenuActivity extends AppCompatActivity implements ReminderItemT
 
     private TextView remindersCounter, noReminderHint, reminders_text_view;
 
-    private FloatingActionButton addReminder;
+    private FloatingActionButton addReminder, maps_button;
     private RecyclerView recyclerView;
     private ArrayList<Reminder> dataholder;     //Array list to add reminders and display in recyclerview
     private RecyclerViewAdapter adapter;
@@ -72,6 +72,7 @@ public class MainMenuActivity extends AppCompatActivity implements ReminderItemT
         preferences = PreferenceManager.getDefaultSharedPreferences(this); //Initializes the SharedPreferences
 
         addReminder = findViewById(R.id.floating_action_button);
+        maps_button = findViewById(R.id.floating_maps_button);
 
         recyclerView = findViewById(R.id.recyclerview);
 
@@ -103,6 +104,13 @@ public class MainMenuActivity extends AppCompatActivity implements ReminderItemT
             @Override
             public void onClick(View v) {
                 openAddReminder();
+            }
+        });
+
+        maps_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openMapsActivity();
             }
         });
 
@@ -164,6 +172,8 @@ public class MainMenuActivity extends AppCompatActivity implements ReminderItemT
             String reminder_time = dataholder.get(position).getReminder_time();
             String creation_time = dataholder.get(position).getCreation_time();
             reminder_seen = dataholder.get(position).getReminder_seen();
+            double location_x = dataholder.get(position).getLocation_x();
+            double location_y = dataholder.get(position).getLocation_y();
 
             // remove the item from recycler view
             myDB.deleteReminder(idOfItemRemoved);
@@ -177,7 +187,10 @@ public class MainMenuActivity extends AppCompatActivity implements ReminderItemT
             snackbar.setAction(getString(R.string.undo), new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    SimpleDateFormat fmt = new SimpleDateFormat("EEEE dd LLLL yyyy - HH:mm", Locale.getDefault());
+                    SimpleDateFormat fmt;
+                    if (preferences.getString("language", "fr").equals("fr")) fmt = new SimpleDateFormat("EEEE dd LLLL yyyy - HH:mm", Locale.FRENCH);
+                    else fmt = new SimpleDateFormat("EEEE dd LLLL yyyy - HH:mm", Locale.ENGLISH);
+
                     Date date = null;
                     try {
                         date = fmt.parse(reminder_time);
@@ -194,7 +207,7 @@ public class MainMenuActivity extends AppCompatActivity implements ReminderItemT
                     else reminder_seen = "false";
 
                     // undo is selected, restore the deleted item
-                    myDB.addReminder(message, picture, new_reminder_time, creation_time, reminder_seen);
+                    myDB.addReminder(message, picture, new_reminder_time, creation_time, reminder_seen, location_x, location_y);
                     reloadAll();
                 }
             });
@@ -291,15 +304,20 @@ public class MainMenuActivity extends AppCompatActivity implements ReminderItemT
             SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             Date date = null;
             try {
-                date = fmt.parse(cursor.getString(3));
+                if (!cursor.getString(3).isEmpty()) date = fmt.parse(cursor.getString(3));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
 
-            SimpleDateFormat fmtOut = new SimpleDateFormat("EEEE dd LLLL yyyy - HH:mm", Locale.getDefault());
-            String reminder_time = fmtOut.format(date);
+            SimpleDateFormat fmtOut;
+            if (preferences.getString("language", "fr").equals("fr")) fmtOut = new SimpleDateFormat("EEEE dd LLLL yyyy - HH:mm", Locale.FRENCH);
+            else fmtOut = new SimpleDateFormat("EEEE dd LLLL yyyy - HH:mm", Locale.ENGLISH);
 
-            Reminder reminder = new Reminder(cursor.getInt(0), cursor.getString(1), cursor.getString(2), reminder_time, cursor.getString(4), cursor.getString(5));
+            String reminder_time;
+            if (date != null) reminder_time = fmtOut.format(date);
+            else reminder_time = "";
+
+            Reminder reminder = new Reminder(cursor.getInt(0), cursor.getString(1), cursor.getString(2), reminder_time, cursor.getString(4), cursor.getString(5), cursor.getDouble(6), cursor.getDouble(7));
             dataholder.add(reminder);
         }
     }
@@ -373,6 +391,11 @@ public class MainMenuActivity extends AppCompatActivity implements ReminderItemT
      */
     private void openAddReminder() {
         Intent intent = new Intent(this, AddReminderActivity.class);
+        startActivity(intent);
+    }
+
+    private void openMapsActivity() {
+        Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
     }
 

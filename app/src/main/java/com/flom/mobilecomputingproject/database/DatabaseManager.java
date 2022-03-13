@@ -16,7 +16,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     private Context context;
     private static final String DB_NAME = "Reminder";
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION = 4;
 
     private static final String TABLE_NAME = "myReminder";
     private static final String COLUMN_ID = "_id";
@@ -25,6 +25,8 @@ public class DatabaseManager extends SQLiteOpenHelper {
     private static final String COLUMN_REMINDER_TIME = "reminder_time";
     private static final String COLUMN_CREATION_TIME = "creation_time";
     private static final String COLUMN_REMINDER_SEEN = "reminder_seen";
+    private static final String COLUMN_LOCATION_X = "location_x";
+    private static final String COLUMN_LOCATION_Y = "location_y";
 
     public DatabaseManager(@Nullable Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -39,7 +41,9 @@ public class DatabaseManager extends SQLiteOpenHelper {
                 COLUMN_PICTURE + " TEXT, " +
                 COLUMN_REMINDER_TIME + " DATETIME, " +
                 COLUMN_CREATION_TIME + " DATETIME, " +
-                COLUMN_REMINDER_SEEN + " TEXT);";
+                COLUMN_REMINDER_SEEN + " TEXT, " +
+                COLUMN_LOCATION_X + " DOUBLE, " +
+                COLUMN_LOCATION_Y + " DOUBLE);";
         sqLiteDatabase.execSQL(query);
     }
 
@@ -77,7 +81,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public int addReminder(String message, String picture, String reminder_time, String creation_time, String reminder_seen) {
+    public int addReminder(String message, String picture, String reminder_time, String creation_time, String reminder_seen, double location_x, double location_y) {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
@@ -86,6 +90,8 @@ public class DatabaseManager extends SQLiteOpenHelper {
         contentValues.put(COLUMN_REMINDER_TIME, reminder_time);
         contentValues.put(COLUMN_CREATION_TIME, creation_time);
         contentValues.put(COLUMN_REMINDER_SEEN, reminder_seen);
+        contentValues.put(COLUMN_LOCATION_X, location_x);
+        contentValues.put(COLUMN_LOCATION_Y, location_y);
 
         float result = database.insert(TABLE_NAME, null, contentValues);
 
@@ -113,6 +119,11 @@ public class DatabaseManager extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getWritableDatabase();
         database.execSQL("UPDATE " + TABLE_NAME + " SET " + COLUMN_MESSAGE + " = '" + message + "', " + COLUMN_PICTURE + " = '" + picture + "', " + COLUMN_REMINDER_TIME + " = '" + reminder_time_textview + "', " + COLUMN_REMINDER_SEEN + " = '" + reminder_seen + "' WHERE " + COLUMN_ID + " = " + reminder_id);
     }
+
+    /*public void updateReminder(int reminder_id, String message, String picture, String reminder_time_textview, String reminder_seen, double location_x, double location_y) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.execSQL("UPDATE " + TABLE_NAME + " SET " + COLUMN_MESSAGE + " = '" + message + "', " + COLUMN_PICTURE + " = '" + picture + "', " + COLUMN_REMINDER_TIME + " = '" + reminder_time_textview + "', " + COLUMN_REMINDER_SEEN + " = '" + reminder_seen + "', " + COLUMN_LOCATION_X + " = " + location_x + ", " + COLUMN_LOCATION_Y + " = " + location_y + " WHERE " + COLUMN_ID + " = " + reminder_id);
+    }*/
 
     public void updateReminderSeen(int reminder_id, String reminder_seen) {
         SQLiteDatabase database = this.getWritableDatabase();

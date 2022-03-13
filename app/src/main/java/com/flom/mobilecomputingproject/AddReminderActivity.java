@@ -2,6 +2,7 @@ package com.flom.mobilecomputingproject;
 
 import android.Manifest;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,14 +33,22 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.work.Constraints;
 import androidx.work.Data;
-import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import com.flom.mobilecomputingproject.database.DatabaseManager;
+import com.flom.mobilecomputingproject.notifications.NotificationWorker;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingClient;
+import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationServices;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -55,7 +64,7 @@ public class AddReminderActivity extends AppCompatActivity {
 
     public static final Integer RecordAudioRequestCode = 1;
     private SpeechRecognizer speechRecognizer;
-    private EditText messageEditText;
+    private EditText messageEditText, ET_location_x, ET_location_y;
     private ImageView micButton;
 
     private TextView picturetextview;
@@ -70,7 +79,7 @@ public class AddReminderActivity extends AppCompatActivity {
 
     private Boolean isDateSet;
 
-    private String reminder_time_textview;
+    private String reminder_time_textview = "";
 
     private int reminder_id;
 
@@ -82,7 +91,7 @@ public class AddReminderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_reminder);
 
-        if(ContextCompat.checkSelfPermission(this,Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             checkPermission();
         }
 
@@ -91,7 +100,7 @@ public class AddReminderActivity extends AppCompatActivity {
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
 
         final Intent speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
 
         speechRecognizer.setRecognitionListener(new RecognitionListener() {
@@ -147,10 +156,10 @@ public class AddReminderActivity extends AppCompatActivity {
         micButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_UP){
+                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     speechRecognizer.stopListening();
                 }
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN){
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                     micButton.setImageResource(R.drawable.ic_keyboard_voice_red_24);
                     speechRecognizer.startListening(speechRecognizerIntent);
                 }
@@ -166,6 +175,11 @@ public class AddReminderActivity extends AppCompatActivity {
         datetextview = findViewById(R.id.date);
         selectDate = findViewById(R.id.selectDate);
         submit = findViewById(R.id.addButton);
+
+
+        ET_location_x = findViewById(R.id.ET_location_x);
+        ET_location_y = findViewById(R.id.ET_location_y);
+
 
         switch_add_notification = findViewById(R.id.switch_add_notification);
 
@@ -215,7 +229,7 @@ public class AddReminderActivity extends AppCompatActivity {
                         TimePickerDialog time = new TimePickerDialog(AddReminderActivity.this, new TimePickerDialog.OnTimeSetListener() {
                             @Override
                             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                newDate.set(year, month, dayOfMonth, hourOfDay, minute,0);
+                                newDate.set(year, month, dayOfMonth, hourOfDay, minute, 0);
 
                                 Calendar tem = Calendar.getInstance();
 
@@ -243,14 +257,14 @@ public class AddReminderActivity extends AppCompatActivity {
                                     isDateSet = true;
                                     reminder_time_textview = year + "-" + monthModified + "-" + dayOfMonthModified + " " + hourOfDayModified + ":" + minuteModified;
                                     datetextview.setText(year + "-" + monthModified + "-" + dayOfMonthModified + "\n" + hourOfDayModified + ":" + minuteModified);
-                                }
-                                else Toast.makeText(AddReminderActivity.this, R.string.invalid_time, Toast.LENGTH_SHORT).show();
+                                } else
+                                    Toast.makeText(AddReminderActivity.this, R.string.invalid_time, Toast.LENGTH_SHORT).show();
                             }
-                        }, newTime.get(Calendar.HOUR_OF_DAY), newTime.get(Calendar.MINUTE),true);
+                        }, newTime.get(Calendar.HOUR_OF_DAY), newTime.get(Calendar.MINUTE), true);
 
                         time.show();
                     }
-                }, newCalender.get(Calendar.YEAR), newCalender.get(Calendar.MONTH),newCalender.get(Calendar.DAY_OF_MONTH));
+                }, newCalender.get(Calendar.YEAR), newCalender.get(Calendar.MONTH), newCalender.get(Calendar.DAY_OF_MONTH));
 
                 dialog.getDatePicker().setMinDate(System.currentTimeMillis());
                 dialog.show();
@@ -264,48 +278,69 @@ public class AddReminderActivity extends AppCompatActivity {
                 String message = messageEditText.getText().toString().trim();
                 String picture = picturetextview.getText().toString().trim();
 
-                if (!isDateSet) {
+
+                String templocation_x = ET_location_x.getText().toString().trim();
+                String templocation_y = ET_location_y.getText().toString().trim();
+
+
+                if (!isDateSet && (templocation_x.isEmpty() || templocation_y.isEmpty())) {
                     datetextview.setError("");
                     datetextview.setTextColor(Color.RED);
                     datetextview.setText(R.string.add_date_before_validate);
+                    ET_location_x.setError(getString(R.string.add_date_before_validate));
+                    ET_location_y.setError(getString(R.string.add_date_before_validate));
                 } else if (message.isEmpty()) {
                     messageEditText.setError(getString(R.string.add_message_before_validate));
                 } else {
                     if (picture.isEmpty()) picture = "";
 
-                    Calendar currentDate = Calendar.getInstance();
+                    String reminder_seen = "false";
 
-                    SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                    Date date = null;
-                    try {
-                        date = fmt.parse(reminder_time_textview);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
+                    long timeDiff = 0;
+
+                    if (isDateSet) {
+                        Calendar currentDate = Calendar.getInstance();
+
+                        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                        Date date = null;
+                        try {
+                            date = fmt.parse(reminder_time_textview);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        timeDiff = date.getTime() - currentDate.getTimeInMillis();
+
+                        if (timeDiff <= 0) reminder_seen = "true";
+                        else reminder_seen = "false";
                     }
 
-                    long timeDiff = date.getTime() - currentDate.getTimeInMillis();
+                    double location_x, location_y;
 
-                    String reminder_seen;
-                    if (timeDiff <= 0) reminder_seen = "true";
-                    else reminder_seen = "false";
+                    if (templocation_x.isEmpty()) location_x = -1;
+                    else location_x = Double.parseDouble(templocation_x);
+                    if (templocation_y.isEmpty()) location_y = -1;
+                    else location_y = Double.parseDouble(templocation_y);
 
-                    processinsert(message, picture, reminder_seen);
+                    processinsert(message, picture, reminder_seen, location_x, location_y);
 
 
-                    if (every_day) {
-                        PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(NotificationWorker.class, 24, TimeUnit.HOURS).build();
+                    if (location_x == -1 && location_y == -1 && isDateSet) {
+                        if (every_day) {
+                            PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(NotificationWorker.class, 24, TimeUnit.HOURS).build();
 
-                        WorkManager.getInstance().enqueue(periodicWorkRequest);
-                    } else {
-                        OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class).setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
-                                .setInputData(new Data.Builder()
-                                        .putString("IMAGE_URI", String.valueOf(mImageUri))
-                                        .putInt("ID", reminder_id)
-                                        .putBoolean("SHOW_NOTIFICATION", add_notification)
-                                        .build())
-                                .addTag(message).build();
+                            WorkManager.getInstance().enqueue(periodicWorkRequest);
+                        } else {
+                            OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class).setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
+                                    .setInputData(new Data.Builder()
+                                            .putString("IMAGE_URI", String.valueOf(mImageUri))
+                                            .putInt("ID", reminder_id)
+                                            .putBoolean("SHOW_NOTIFICATION", add_notification)
+                                            .build())
+                                    .addTag(message).build();
 
-                        WorkManager.getInstance().enqueue(oneTimeWorkRequest);
+                            WorkManager.getInstance().enqueue(oneTimeWorkRequest);
+                        }
                     }
 
 
@@ -376,12 +411,12 @@ public class AddReminderActivity extends AppCompatActivity {
     }
 
 
-    private void processinsert(String message, String picture, String reminder_seen) {
+    private void processinsert(String message, String picture, String reminder_seen, double location_x, double location_y) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
         String creation_time = sdf.format(new Date());
 
         DatabaseManager myDB = new DatabaseManager(AddReminderActivity.this);
-        reminder_id = myDB.addReminder(message, picture, reminder_time_textview, getString(R.string.created_on) + creation_time, reminder_seen);     //inserts the data into sql lite database
+        reminder_id = myDB.addReminder(message, picture, reminder_time_textview, creation_time, reminder_seen, location_x, location_y);     //inserts the data into sql lite database
 
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt("TotalNumberOfReminders", preferences.getInt("TotalNumberOfReminders", 0) + 1);

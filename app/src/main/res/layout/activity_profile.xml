@@ -13,8 +13,8 @@
             android:layout_width="match_parent"
             android:layout_height="350dp"
             android:background="@color/purple_700"
-            android:orientation="vertical"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="vertical">
 
             <ImageButton
                 android:id="@+id/profilePicture"
@@ -72,8 +72,7 @@
         android:layout_width="360dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_gravity="center"
-        android:layout_marginTop="5dp">
+        android:layout_gravity="center">
 
 
         <com.google.android.material.textfield.TextInputLayout
@@ -125,7 +124,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:gravity="center_horizontal|bottom"
         android:orientation="vertical"
